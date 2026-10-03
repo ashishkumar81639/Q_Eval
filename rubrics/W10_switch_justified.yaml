@@ -1,0 +1,14 @@
+id: W10_switch_justified
+rule: W10
+version: 1
+scope: turn
+inputs: [previous_turns, user_message, members, reply_fields, reply_message, flag_reason]
+question: >
+  The assistant changed which household member the conversation is about (see flag_reason), although the
+  user's latest message doesn't name the new member. Was the switch clearly justified by what the user
+  said (e.g. a pronoun or description that only fits the new member, or a clear new topic about them)?
+pass_if: The user's message clearly refers to the new member, so the switch is correct.
+fail_if: >
+  The message continues the previous thread ("it's worse now", "she also vomited") or is ambiguous, and
+  the assistant silently moved to a different member.
+do_not_penalise: The assistant explicitly confirming the switch with the user.

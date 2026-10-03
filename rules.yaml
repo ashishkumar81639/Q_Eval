@@ -30,7 +30,7 @@ W6: {area: who, severity: major, summary: "After a clarification: same person ->
 W7: {area: who, severity: major, summary: "Ignored clarification is not asked again; the name is treated as a different person"}
 W8: {area: who, severity: major, summary: "Can't tell who and it matters: asks who it is about, with members as options"}
 W9: {area: who, severity: major, summary: "Emergencies override: picks the most likely person and gives emergency advice immediately"}
-W10: {area: who, severity: major, summary: "Never switches people silently or mixes symptoms; every fact on the right member", deterministic: [W10_facts_on_tagged_members]}
+W10: {area: who, severity: major, summary: "Never switches people silently or mixes symptoms; every fact on the right member", deterministic: [W10_facts_on_tagged_members, W10_no_silent_switch], judge: [W10_switch_justified]}
 
 T1: {area: triage, severity: major, summary: "Uses what is already known; doesn't ask for information it has"}
 T2: {area: triage, severity: major, summary: "Considers family history when it could change the picture", judge: [T2_family_history_used]}

@@ -435,6 +435,46 @@ def w10(t: NormTurn, run: NormRun) -> Verdict:
     )
 
 
+RELATION_WORDS = {
+    "son": ["son", "boy"],
+    "daughter": ["daughter", "girl"],
+    "wife": ["wife"],
+    "husband": ["husband"],
+    "mother": ["mother", "mom", "mum", "ma"],
+    "father": ["father", "dad", "papa"],
+    "self": ["i", "me", "my", "i'm", "i've"],
+}
+
+
+@check(id="W10_no_silent_switch", rule="W10", confirm_with="W10_switch_justified")
+def w10_switch(t: NormTurn, run: NormRun) -> Verdict:
+    """Cross-turn continuity: the primary member changed although the user's message doesn't name them."""
+    prev = [
+        x
+        for x in run.turns
+        if x.account_key == t.account_key and x.idx < t.idx and x.reply.get("subject_ids")
+    ]
+    now = t.reply.get("subject_ids") or []
+    if not prev or not now:
+        return Verdict("n/a", message="no earlier member or no member this turn")
+    before, after = prev[-1].reply["subject_ids"][0], now[0]
+    if before == after:
+        return Verdict("pass", {"member": after})
+    sv = t.state or t.prev_state
+    m = sv.members.get(after)
+    words = set(re.findall(r"[a-z']+", t.user_text.lower()))
+    cues = []
+    if m is not None:
+        cues = [
+            w.lower() for w in ([m.name] if m.name else []) + RELATION_WORDS.get(m.relation, [m.relation])
+        ]
+    named = any(c in words or (c and " " in c and c in t.user_text.lower()) for c in cues)
+    ev = {"from": sv.member_name(before), "to": sv.member_name(after), "cues": cues}
+    if named:
+        return Verdict("pass", ev)
+    return Verdict("flag", ev, f"switched from {ev['from']} to {ev['to']} without the user naming them")
+
+
 def _account_ids(obj, out: set[str]) -> None:
     if isinstance(obj, dict):
         for k, v in obj.items():

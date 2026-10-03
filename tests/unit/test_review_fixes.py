@@ -643,3 +643,51 @@ def test_leaky_persona_run_still_gets_fidelity_rubric():
     assert detect_leaks(run)
     tasks = plan_tasks(run, [], load_rubrics(), only_sim=True)
     assert [t.rubric.id for t in tasks] == ["SIM_fidelity"]
+
+
+# ---------------------------------------------------------------- W10 cross-turn continuity
+
+
+def _two_kid_run(texts_and_subjects):
+    sc = Scenario.model_validate(
+        {"id": "w", "title": "t", "rules": ["W10"], "turns": [{"user": u} for u, _ in texts_and_subjects]}
+    )
+    state = {
+        "account": {"id": "acc"},
+        "subjects": [
+            {"id": "s_a", "relation": "son", "name": "Aarav"},
+            {"id": "s_r", "relation": "daughter", "name": "Riya"},
+        ],
+    }
+    sr = {
+        "id": "sr",
+        "rep": 1,
+        "status": "valid",
+        "accounts": {"main": {"account_id": "acc", "refs": {}}},
+        "initial_states": {"main": state},
+        "final_states": {},
+    }
+    rows = [
+        {
+            "idx": i,
+            "account_key": "main",
+            "sent_text": u,
+            "received_at": "2026-10-01T10:00:00+05:30",
+            "response": {"respond": respond(subject_ids=[sid]), "trace": []},
+        }
+        for i, (u, sid) in enumerate(texts_and_subjects)
+    ]
+    return build_norm_run(sc, sr, rows, "2026-10-01")
+
+
+def test_w10_silent_switch_is_flagged():
+    run = _two_kid_run([("Riya has a fever", "s_r"), ("she also vomited", "s_a")])
+    v = run_check(REGISTRY["W10_no_silent_switch"], run.turns[1], run)
+    assert v.status == "flag" and v.evidence["to"] == "Aarav"
+
+
+def test_w10_named_switch_passes():
+    run = _two_kid_run([("Riya has a fever", "s_r"), ("now my son Aarav has a cough", "s_a")])
+    assert run_check(REGISTRY["W10_no_silent_switch"], run.turns[1], run).status == "pass"
+    same = _two_kid_run([("Riya has a fever", "s_r"), ("she also vomited", "s_r")])
+    assert run_check(REGISTRY["W10_no_silent_switch"], same.turns[1], same).status == "pass"

@@ -204,6 +204,7 @@ async def grade(
             rules=rules,
             run_id=run_id,
             max_tokens_budget=settings.max_judge_tokens,
+            concurrency=settings.judge_concurrency,
         )
     gid = repo.create_grading(
         run_id,
@@ -217,7 +218,7 @@ async def grade(
         },
     )
     items = norm_runs_for(repo, run_id, allow_changed=allow_changed)
-    sem = asyncio.Semaphore(4)
+    sem = asyncio.Semaphore(max(4, settings.judge_concurrency))  # scenario runs judged at once
 
     async def grade_one(sr: dict, nr: NormRun | None, problem: str) -> None:
         if nr is None:

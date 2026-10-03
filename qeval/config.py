@@ -20,6 +20,7 @@ class Settings(BaseSettings):
     database_url: str | None = Field(default=None, alias="DATABASE_URL")
     judge_model: str = Field(default="claude-sonnet-5-5", alias="JUDGE_MODEL")
     judge_effort: str = Field(default="medium", alias="JUDGE_EFFORT")
+    judge_concurrency: int = Field(default=8, alias="JUDGE_CONCURRENCY")
     sim_model: str = Field(default="claude-sonnet-5-5", alias="SIM_MODEL")
     sim_effort: str = Field(default="low", alias="SIM_EFFORT")
     concurrency: int = Field(default=4, alias="QEVAL_CONCURRENCY")

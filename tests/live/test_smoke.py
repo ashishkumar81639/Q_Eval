@@ -16,7 +16,9 @@ async def _smoke(tmp_path, scenario_file: str) -> tuple[Repo, str]:
     s = get_settings().model_copy(update={"runs_dir": tmp_path, "database_url": None})
     cat = build_catalog([ROOT / scenario_file])
     assert cat.ok, cat.errors
-    run_id = await _run_async(s, cat, k=1, concurrency=1, name="smoke", resume=None, cleanup=True, progress=False)
+    run_id = await _run_async(
+        s, cat, k=1, concurrency=1, name="smoke", resume=None, cleanup=True, progress=False
+    )
     repo = Repo(make_engine(None, tmp_path))
     return repo, run_id
 
