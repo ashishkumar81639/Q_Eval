@@ -1,0 +1,14 @@
+id: T8_urgency_fits
+rule: T8
+version: 1
+scope: conversation
+inputs: [members, transcript, reference]
+question: >
+  Does the urgency of the assistant's assessment fit the clinical picture — neither under-triaged
+  (missing something serious) nor over-triaged (calling everything urgent)? Use the reference urgency
+  as the expected answer when one is given.
+pass_if: The assessed urgency matches the reference (or is clinically reasonable if there is no reference).
+fail_if: >
+  Under-triage (lower than needed, e.g. self_care for a breathless child) or over-triage (urgent for a mild
+  cold), or no assessment was given.
+do_not_penalise: One level higher than the reference when the description contains a genuine worrying sign.

@@ -1,0 +1,18 @@
+id: s_elderly_longstanding_forgetful
+title: Elderly mother mildly forgetful for years (twin; must not be called urgent)
+rules: [T8, S6]
+twin: s_elderly_sudden_confusion
+seed:
+  holder: {name: Sanjay, sex: male, date_of_birth: "1975-10-10"}
+  subjects:
+    - {ref: mother, relation: mother, name: Kamala, sex: female, date_of_birth: "1946-02-14"}
+turns:
+  - at: "0d 12:00"
+    user: "my mother has been a little forgetful for the past couple of years, she misplaces her keys and glasses sometimes"
+    expect:
+      - "reply.subject_ids[0] == ref('mother')    # W2"
+  - user: "nothing sudden, she manages her daily routine fine and still cooks and goes for walks"
+    expect:
+      - "reply.urgency != 'urgent'                # T8"
+final_expect:
+  - "state.assessments(subject=ref('mother')).none(urgency == 'urgent')   # T8"

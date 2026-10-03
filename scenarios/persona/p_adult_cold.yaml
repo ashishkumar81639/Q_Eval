@@ -1,0 +1,5 @@
+id: p_adult_cold
+title: "Simulated user: Healthy adult with a common cold (over-triage check)"
+rules: [T6, T8, S6, R9]
+k: 3
+persona: p_adult_cold

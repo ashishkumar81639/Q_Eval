@@ -1,0 +1,17 @@
+id: M2_only_user_words
+rule: M2
+version: 1
+scope: fact
+inputs: [fact_value, user_messages_so_far, now_ist, flag_reason]
+question: Does this stored fact stay close to what the user actually said or clearly confirmed?
+pass_if: >
+  Same meaning in the user's own terms. Allowed changes: absolute dates/times (required), unit conversions
+  (103F -> 39.4C), member names, light rephrasing that adds no new meaning.
+fail_if: >
+  It adds a medical interpretation or label the user didn't say (user "very sleepy and a bit hard to wake
+  up" stored as "reduced consciousness"; "breathing fast" stored as "respiratory distress"), or stores a
+  guess, a possible cause, or advice.
+do_not_penalise: Normalising spelling or grammar.
+examples:
+  fail: ["red_flag_present: reduced consciousness, hard to wake  (user said: very sleepy and a bit hard to wake up)"]
+  pass: ["temperature_measured: 103 F (39.4 C) on Mon 28 Sep 2026  (user said: she has 103F)"]

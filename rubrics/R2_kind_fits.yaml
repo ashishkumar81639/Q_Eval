@@ -1,0 +1,15 @@
+id: R2_kind_fits
+rule: R2
+version: 1
+scope: turn
+inputs: [previous_turns, user_message, members, reply_fields, reply_message]
+question: Does the reply kind fit the turn?
+pass_if: >
+  followup when more symptom information is needed; clarify when it needs to know who the message is
+  about; assessment when it has enough to triage (or it is an emergency); info for general questions,
+  greetings, thanks and off-topic messages.
+fail_if: >
+  The kind clearly doesn't fit, e.g. info for a message with current personal symptoms; followup when
+  the message is a general question; clarify when exactly one member fits; followup instead of assessment
+  in an emergency.
+do_not_penalise: A reasonable choice between followup and assessment when the information is borderline.

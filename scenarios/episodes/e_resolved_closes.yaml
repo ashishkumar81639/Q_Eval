@@ -1,0 +1,16 @@
+id: e_resolved_closes
+title: '"she''s all better" closes the open episode'
+rules: [E3]
+seed:
+  holder: {name: Gaurav, sex: male, date_of_birth: "1990-05-01"}
+  subjects:
+    - {ref: riya, relation: daughter, name: Riya, sex: female, date_of_birth: "{{date:-4y}}"}
+  episodes:
+    - {ref: fever, subject_ref: riya, complaint: fever, opened_at: "{{t:-4d 18:00}}", last_activity_at: "{{t:-2d 10:00}}", status: open}
+turns:
+  - at: "0d 10:00"
+    user: "good news, Riya is all better now, the fever went away yesterday and she's back to normal"
+    expect:
+      - "diff.closed_episodes.count == 1                                  # E3"
+      - "state.episodes(subject=ref('riya'), status='open').count == 0    # E3"
+      - "trace.called('close_episode')                                    # E3"

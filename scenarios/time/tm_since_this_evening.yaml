@@ -1,0 +1,12 @@
+id: tm_since_this_evening
+title: '"since this evening" keeps the words with today''s date'
+rules: [TM1]
+seed:
+  holder: {name: Gaurav, sex: male, date_of_birth: "1990-05-01"}
+  subjects:
+    - {ref: riya, relation: daughter, name: Riya, sex: female, date_of_birth: "{{date:-4y}}"}
+turns:
+  - at: "0d 21:00"
+    user: "Riya has had a fever since this evening"
+    expect:
+      - "state.facts(subject=ref('riya')).any(value ~ date_re(0))     # TM1"

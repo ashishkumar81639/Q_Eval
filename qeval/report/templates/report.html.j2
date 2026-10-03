@@ -1,0 +1,244 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Q eval report · {{ run.run_id }}</title>
+<style>
+:root {
+  --bg: #fbfaf7; --panel: #ffffff; --ink: #1d1d1b; --muted: #6b6a66; --line: #e6e3dc;
+  --crit: #b4232a; --crit-bg: #fbe9e9; --major: #a15c00; --major-bg: #fdf1df; --minor: #4a5b6d; --minor-bg: #eaeef2;
+  --ok: #2c7a3f; --ok-bg: #e5f3e8; --code: #f4f2ed; --accent: #2f5aa8;
+}
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #161615; --panel: #1f1f1d; --ink: #ecebe6; --muted: #a09e97; --line: #34332f;
+    --crit: #ff7b7b; --crit-bg: #3a1e1e; --major: #f0b25a; --major-bg: #3a2c17; --minor: #a9bbcc; --minor-bg: #252d35;
+    --ok: #79c98b; --ok-bg: #1c2f21; --code: #262623; --accent: #8fb0ef;
+  }
+}
+* { box-sizing: border-box; }
+body { margin: 0; background: var(--bg); color: var(--ink); font: 14px/1.5 -apple-system, BlinkMacSystemFont, "Segoe UI", Inter, sans-serif; }
+main { max-width: 1180px; margin: 0 auto; padding: 24px 16px 80px; }
+h1 { font-size: 22px; margin: 0 0 4px; }
+h2 { font-size: 17px; margin: 32px 0 10px; border-bottom: 1px solid var(--line); padding-bottom: 6px; }
+h3 { font-size: 15px; margin: 0; }
+a { color: var(--accent); }
+.muted { color: var(--muted); }
+.grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 10px; }
+.tile { background: var(--panel); border: 1px solid var(--line); border-radius: 8px; padding: 10px 12px; }
+.tile .v { font-size: 20px; font-weight: 600; }
+.tile .k { color: var(--muted); font-size: 12px; }
+table { width: 100%; border-collapse: collapse; background: var(--panel); border: 1px solid var(--line); border-radius: 8px; overflow: hidden; }
+th, td { text-align: left; padding: 6px 10px; border-bottom: 1px solid var(--line); vertical-align: top; }
+th { font-size: 12px; color: var(--muted); font-weight: 600; background: var(--code); }
+tr:last-child td { border-bottom: none; }
+.scroll { overflow-x: auto; }
+.pill { display: inline-block; padding: 1px 8px; border-radius: 999px; font-size: 12px; font-weight: 600; white-space: nowrap; }
+.critical { color: var(--crit); background: var(--crit-bg); }
+.major { color: var(--major); background: var(--major-bg); }
+.minor { color: var(--minor); background: var(--minor-bg); }
+.ok { color: var(--ok); background: var(--ok-bg); }
+.bar { height: 8px; background: var(--code); border-radius: 4px; overflow: hidden; min-width: 80px; }
+.bar > span { display: block; height: 100%; background: var(--ok); }
+details.card { background: var(--panel); border: 1px solid var(--line); border-left: 4px solid var(--line); border-radius: 8px; margin: 10px 0; }
+details.card.critical { border-left-color: var(--crit); background: var(--panel); }
+details.card.major { border-left-color: var(--major); background: var(--panel); }
+details.card.minor { border-left-color: var(--minor); background: var(--panel); }
+details.card > summary { cursor: pointer; padding: 10px 14px; list-style: none; display: flex; gap: 10px; align-items: baseline; flex-wrap: wrap; }
+details.card > summary::-webkit-details-marker { display: none; }
+.cardbody { padding: 0 14px 14px; }
+.why { background: var(--code); border-radius: 6px; padding: 8px 10px; margin: 8px 0; }
+pre { background: var(--code); padding: 8px 10px; border-radius: 6px; overflow-x: auto; font-size: 12px; white-space: pre-wrap; word-break: break-word; margin: 6px 0; }
+.turn { border-top: 1px dashed var(--line); padding: 8px 0; }
+.turn.failing { background: var(--crit-bg); margin: 0 -8px; padding: 8px; border-radius: 6px; }
+.u { font-weight: 600; }
+.q { white-space: pre-wrap; margin-top: 4px; }
+.meta { font-size: 12px; color: var(--muted); }
+.cols { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+@media (max-width: 760px) { .cols { grid-template-columns: 1fr; } }
+.err { color: var(--crit); font-weight: 600; }
+.small { font-size: 12px; }
+</style>
+</head>
+<body>
+<main>
+<h1>Q eval report</h1>
+<div class="muted">Run <b>{{ run.run_id }}</b>{% if run.name %} · {{ run.name }}{% endif %} · grading {{ grading.grading_id }} · status {{ run.status }} · exit code {{ exit_code }}</div>
+<div class="muted small">Agent {{ run.agent_version.model if run.agent_version else '?' }} · prompt {{ run.agent_version.prompt_sha if run.agent_version else '?' }} · commit {{ run.agent_version.commit if run.agent_version else '?' }} · judge {{ grading.judge_model or 'none (deterministic only)' }} · anchor {{ run.anchor_date }} · harness {{ run.harness_sha }}</div>
+
+{% if gate_reasons %}
+<div class="why" style="margin-top:12px"><b>Gate exit {{ exit_code }}:</b>
+<ul class="small">{% for r in gate_reasons %}<li>{{ r }}</li>{% endfor %}</ul></div>
+{% endif %}
+<h2>Summary</h2>
+<div class="grid">
+  <div class="tile"><div class="v">{{ agg.counts.valid }} / {{ agg.counts.jobs }}</div><div class="k">valid scenario runs (k={{ res.run.k }})</div></div>
+  <div class="tile"><div class="v">{{ res.summary.failing_rules|length }}</div><div class="k">rules with failures</div></div>
+  <div class="tile"><div class="v" style="color:var(--crit)">{{ res.summary.critical_failures }}</div><div class="k">critical (safety) rules failing</div></div>
+  <div class="tile"><div class="v">{{ agg.cost.agent_messages }}</div><div class="k">agent messages</div></div>
+  <div class="tile"><div class="v">{{ (agg.cost.latency_ms.p50 / 1000)|round(1) }}s / {{ (agg.cost.latency_ms.p95 / 1000)|round(1) }}s</div><div class="k">latency p50 / p95</div></div>
+  <div class="tile"><div class="v">{{ (agg.cost.agent_tokens.output_tokens or 0) }}</div><div class="k">agent output tokens</div></div>
+  <div class="tile"><div class="v">{{ (agg.cost.judge_tokens.calls or 0) }}</div><div class="k">judge API calls ({{ agg.cost.judge_tokens.input_tokens or 0 }} in / {{ agg.cost.judge_tokens.output_tokens or 0 }} out)</div></div>
+  <div class="tile"><div class="v">{{ agg.counts.sim_excluded }}</div><div class="k">persona runs excluded (sim leaks)</div></div>
+</div>
+
+<h2>By spec area</h2>
+<div class="scroll"><table>
+<tr><th>Area</th><th>Score (severity-weighted)</th><th></th><th>Rules covered</th><th>Failing rules</th><th>Unresolved</th><th>Worst</th></tr>
+{% for a in agg.areas %}
+<tr>
+  <td><b>{{ a.area }}</b></td>
+  <td>{{ a.score|pct }}</td>
+  <td><div class="bar"><span style="width: {{ ((a.score or 0) * 100)|round(0) }}%"></span></div></td>
+  <td>{{ a.rules_covered|length }} / {{ a.rules_total }}</td>
+  <td>{% for r in a.failing_rules %}<a href="#rule-{{ r }}">{{ r }}</a>{% if not loop.last %}, {% endif %}{% else %}<span class="muted">none</span>{% endfor %}</td>
+  <td>{% if a.unresolved %}<span class="pill major">{{ a.unresolved }}</span>{% else %}<span class="muted">0</span>{% endif %}</td>
+  <td>{% if a.worst_severity %}<span class="pill {{ a.worst_severity }}">{{ a.worst_severity }}</span>{% endif %}</td>
+</tr>
+{% endfor %}
+</table></div>
+
+<h2>By rule</h2>
+<p class="muted small">Unresolved = a code check flagged a candidate (S4, T5, M2) but the judge never confirmed or rejected it; these are not in the failure rate and an unresolved critical flag fails the gate. Failure rate = failing (scenario run, check) pairs / counted pairs. A scenario run fails a check if any turn fails it. 95% Wilson interval in brackets.</p>
+<div class="scroll"><table>
+<tr><th>Rule</th><th>Severity</th><th>Failure rate</th><th>Unresolved</th><th>Label</th><th>Checked by</th><th>Summary</th></tr>
+{% for r in agg.rules %}
+<tr id="rule-{{ r.rule }}">
+  <td><b>{{ r.rule }}</b></td>
+  <td><span class="pill {{ r.severity }}">{{ r.severity }}</span></td>
+  <td>{% if r.n %}{{ r.fails }}/{{ r.n }} ({{ r.fail_rate|pct }}) <span class="muted small">[{{ r.ci[0]|pct }}–{{ r.ci[1]|pct }}]</span>{% else %}<span class="muted">not covered</span>{% endif %}</td>
+  <td>{% if r.unresolved %}<span class="pill {{ 'critical' if r.severity == 'critical' else 'major' }}">{{ r.unresolved }}</span>{% else %}<span class="muted">0</span>{% endif %}</td>
+  <td>{% if r.n %}<span class="pill {{ 'ok' if not r.fails else ('critical' if r.label == 'always fails' else 'major') }}">{{ r.label }}</span>{% endif %}</td>
+  <td class="small">{% set c = rule_check_counts.get(r.rule) %}{% if c %}{% for k, v in c.items() if v %}{{ k }} {{ v }}{% if not loop.last %} · {% endif %}{% endfor %}{% endif %}</td>
+  <td class="small">{{ r.summary }}</td>
+</tr>
+{% endfor %}
+</table></div>
+
+<h2>Failures ({{ cards|length }})</h2>
+<p class="muted small">Sorted by severity, then failure rate. Each card shows the first failing rep: why it failed, the transcript up to the failing turn, that turn's trace, and the stored state.</p>
+{% for c in cards %}
+<details class="card {{ c.severity }}" id="{{ c.anchor }}">
+<summary>
+  <span class="pill {{ c.severity }}">{{ c.rule }}</span>
+  <b>{{ c.check }}</b>
+  <span>{{ c.fails }}/{{ c.n }} reps · {{ c.label }}</span>
+  <span class="muted small">{{ c.scenario }} — {{ c.title }}</span>
+</summary>
+<div class="cardbody">
+  <div class="why">
+    <div><b>Why it failed</b> <span class="muted small">({{ c.kind }} check, rep {{ c.rep }}{% if c.turn_idx is not none %}, turn {{ c.turn_idx }}{% else %}, whole conversation{% endif %})</span></div>
+    {% if c.judge %}
+      <div>Judge: <b>{{ c.judge.reason }}</b></div>
+      {% if c.judge.quote %}<div class="small">Quote: “{{ c.judge.quote }}”</div>{% endif %}
+      <div class="small muted">confidence {{ c.judge.confidence }} · trigger {{ c.judge.trigger }}{% if c.judge.fact %} · fact {{ c.judge.fact }}{% endif %}</div>
+    {% else %}
+      {% if c.message %}<div>{{ c.message }}</div>{% endif %}
+      <pre>{{ c.evidence }}</pre>
+    {% endif %}
+    <div class="small muted">scenario run {{ c.scenario_run_id }}{% if c.other_failures %} · other failing reps: {{ c.other_failures|join(', ') }}{% endif %}{% if c.passing_example %} · a passing rep: {{ c.passing_example }}{% endif %}</div>
+  </div>
+  <div class="cols">
+    <div>
+      <h3>Transcript</h3>
+      {% for t in c.transcript %}
+      <div class="turn {% if t.idx == c.turn_idx %}failing{% endif %}">
+        <div class="meta">turn {{ t.idx }} · {{ t.time }}{% if t.account != 'main' %} · account {{ t.account }}{% endif %}{% if t.actor == 'sim_user' %} · simulated user{% endif %}</div>
+        <div class="u">User: {{ t.user }}</div>
+        <div class="meta">Q → kind <b>{{ t.kind }}</b>{% if t.urgency %} · urgency <b>{{ t.urgency }}</b> · escalate {{ t.escalate }}{% endif %} · about {{ t.subjects|join(', ') or '—' }}{% if t.episode %} · episode {{ t.episode }}{% endif %} · {{ t.latency_ms }} ms</div>
+        <div class="q">{{ t.reply }}</div>
+        {% if t.fields %}<pre>{{ t.fields|tojson(indent=1) }}</pre>{% endif %}
+      </div>
+      {% endfor %}
+    </div>
+    <div>
+      {% if c.trace %}
+      <h3>Trace (turn {{ c.turn_idx }})</h3>
+      <div class="scroll"><table class="small">
+        <tr><th>Step</th><th>Tool</th><th>Input</th><th>Output</th></tr>
+        {% for s in c.trace %}
+        <tr><td>{{ s.step }}</td><td>{% if s.is_error %}<span class="err">{{ s.tool }} ✗</span>{% else %}{{ s.tool }}{% endif %}</td><td>{{ s.input }}</td><td>{{ s.output }}</td></tr>
+        {% endfor %}
+      </table></div>
+      {% endif %}
+      {% if c.state.diff %}
+      <h3 style="margin-top:12px">Changes this turn</h3>
+      <pre>{% for k, v in c.state.diff.items() %}{{ k }}:
+{% for x in v %}  • {{ x }}
+{% endfor %}{% endfor %}</pre>
+      {% endif %}
+      <h3 style="margin-top:12px">State</h3>
+      <div class="small"><b>Members:</b> {{ c.state.members|join(' · ') }}</div>
+      {% if c.state.episodes %}
+      <div class="scroll"><table class="small" style="margin-top:6px">
+        <tr><th>Episode</th><th>Member</th><th>Status</th><th>Opened / last</th></tr>
+        {% for e in c.state.episodes %}
+        <tr><td>{{ e.complaint }} <span class="muted">{{ e.id }}</span></td><td>{{ e.member }}</td><td>{{ e.status }}{% if e.closed_by %} ({{ e.closed_by }}){% endif %}</td><td>{{ e.opened }}<br>{{ e.last }}</td></tr>
+        {% endfor %}
+      </table></div>
+      {% endif %}
+      {% if c.state.facts %}
+      <div class="scroll"><table class="small" style="margin-top:6px">
+        <tr><th>Member</th><th>Category / key</th><th>Value</th></tr>
+        {% for f in c.state.facts %}
+        <tr{% if f.this_turn %} style="font-weight:600"{% endif %}><td>{{ f.member }}</td><td>{{ f.category }} / {{ f.key }}</td><td>{{ f.value }}{% if f.superseded %} <span class="muted">(superseded)</span>{% endif %}</td></tr>
+        {% endfor %}
+      </table></div>
+      <div class="muted small">Bold = saved this turn.</div>
+      {% endif %}
+    </div>
+  </div>
+</div>
+</details>
+{% else %}
+<p>No failures.</p>
+{% endfor %}
+
+<h2>Scenarios</h2>
+<div class="scroll"><table class="small">
+<tr><th>Scenario</th><th>Valid / invalid</th><th>Failing checks</th></tr>
+{% for s in agg.scenarios %}
+<tr>
+  <td><b>{{ s.id }}</b><br><span class="muted">{{ s.path }}</span></td>
+  <td>{{ s.valid }} / {{ s.invalid }}{% if s.other %} (+{{ s.other }} other){% endif %}</td>
+  <td>{% for ch in s.checks if ch.fails %}<span class="pill {{ ch.severity }}">{{ ch.rule }}</span> {{ ch.check }} {{ ch.fails }}/{{ ch.n }}<br>{% else %}<span class="muted">all pass</span>{% endfor %}</td>
+</tr>
+{% endfor %}
+</table></div>
+
+<h2>Simulated-user health</h2>
+<p>{{ agg.counts.sim_excluded }} persona run(s) excluded from scoring because the simulated user leaked hidden facts.</p>
+{% for r in agg.problems.sim_leaks %}<pre>{{ r.scenario_run_id }}: {{ r.evidence|tojson(indent=1) }}</pre>{% endfor %}
+
+<h2>Harness problems</h2>
+{% if agg.problems.unresolved %}
+<h3>Unresolved flags</h3>
+<div class="scroll"><table class="small"><tr><th>Scenario</th><th>Check</th><th>Rule</th><th>Runs</th></tr>
+{% for u in agg.problems.unresolved %}<tr><td>{{ u.scenario }}</td><td>{{ u.check }}</td><td><span class="pill {{ u.severity }}">{{ u.rule }}</span></td><td>{{ u.runs|length }}</td></tr>{% endfor %}
+</table></div>
+{% endif %}
+{% if agg.problems.failed_reps %}
+<h3>Reps without a valid run</h3>
+<div class="scroll"><table class="small"><tr><th>Scenario</th><th>Rep</th><th>Status</th><th>Error</th></tr>
+{% for f in agg.problems.failed_reps %}<tr><td>{{ f.scenario }}{% if f.critical %} <span class="pill critical">critical</span>{% endif %}</td><td>{{ f.rep }}</td><td>{{ f.status }}</td><td>{{ f.error|short(200) }}</td></tr>{% endfor %}
+</table></div>
+{% endif %}
+<p class="small">Invalid or errored attempts: {{ agg.problems.invalid_runs|length }} · check errors: {{ agg.problems.check_errors|length }} · judge errors: {{ agg.problems.judge_errors|length }} · judge unclear: {{ agg.problems.judge_unclear|length }}</p>
+{% if agg.problems.invalid_runs %}
+<div class="scroll"><table class="small">
+<tr><th>Scenario</th><th>Rep / attempt</th><th>Status</th><th>Error</th></tr>
+{% for p in agg.problems.invalid_runs[:60] %}<tr><td>{{ p.scenario }}</td><td>{{ p.rep }} / {{ p.attempt }}</td><td>{{ p.status }}</td><td>{{ p.error|short(300) }}</td></tr>{% endfor %}
+</table></div>
+{% endif %}
+{% if agg.problems.check_errors %}
+<h3 style="margin-top:12px">Check errors</h3>
+{% for e in agg.problems.check_errors[:40] %}<pre>{{ e.check_id }} turn {{ e.turn_idx }}: {{ e.message }}</pre>{% endfor %}
+{% endif %}
+{% if agg.problems.judge_errors %}
+<h3 style="margin-top:12px">Judge errors</h3>
+{% for e in agg.problems.judge_errors[:20] %}<pre>{{ e.check_id }} turn {{ e.turn_idx }}: {{ e.message }}</pre>{% endfor %}
+{% endif %}
+</main>
+</body>
+</html>

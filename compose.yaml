@@ -1,0 +1,11 @@
+services:
+  db:
+    image: postgres:18
+    environment: {POSTGRES_USER: qeval, POSTGRES_PASSWORD: qeval, POSTGRES_DB: qeval}
+    ports: ["5433:5432"]                      # 5433 avoids clashing with a local Postgres
+    volumes: [qeval_pg:/var/lib/postgresql]   # 18+ mounts here, not .../data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U qeval"]
+      interval: 2s
+      retries: 30
+volumes: {qeval_pg: {}}

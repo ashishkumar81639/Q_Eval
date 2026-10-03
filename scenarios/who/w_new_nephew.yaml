@@ -1,0 +1,18 @@
+id: w_new_nephew
+title: A nephew not on the roster is added with what is known
+rules: [W5, R6, M3]
+seed:
+  holder: {name: Gaurav, sex: male, date_of_birth: "1980-05-01"}
+  subjects:
+    - {ref: riya, relation: daughter, name: Riya, sex: female, date_of_birth: "{{date:-6y}}"}
+turns:
+  - at: "0d 11:00"
+    user: "my nephew Kabir, he's 8, is staying with us this week and he's had a fever since yesterday"
+    expect:
+      - "reply.kind != 'clarify'                          # W5"
+      - "diff.new_subjects.count == 1                     # W5"
+      - "diff.new_subjects.first.name ~ 'kabir'           # W5"
+      - "diff.new_subjects.first.relation ~ 'nephew'      # W5"
+      - "reply.subject_ids[0] == member(name='Kabir')     # W5"
+      - "state.facts(subject=ref('riya')).none(value ~ 'fever')   # W10"
+      - "state.facts(subject=member(name='Kabir')).any(value ~ 'fever' or key ~ 'fever')   # M3"

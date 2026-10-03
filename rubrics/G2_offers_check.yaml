@@ -1,0 +1,12 @@
+id: G2_offers_check
+rule: G2
+severity: minor
+version: 1
+scope: turn
+inputs: [previous_turns, user_message, members, reply_message]
+question: >
+  The general question plausibly relates to a household member (age or relation matches, or it follows a
+  thread about them). Does the reply answer it and offer to check on that member?
+pass_if: It answers the question and offers to check on (or asks about) the relevant member.
+fail_if: It doesn't answer, or doesn't offer to check on a plausibly related member.
+do_not_penalise: Wording of the offer.

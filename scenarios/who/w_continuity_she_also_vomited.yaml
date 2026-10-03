@@ -1,0 +1,16 @@
+id: w_continuity_she_also_vomited
+title: '"she also vomited" stays with the member and episode from the recent turn'
+rules: [W1, E2]
+seed:
+  holder: {name: Gaurav, sex: male, date_of_birth: "1988-05-01"}
+  subjects:
+    - {ref: aarav, relation: son, name: Aarav, sex: male, date_of_birth: "{{date:-8y}}"}
+    - {ref: riya, relation: daughter, name: Riya, sex: female, date_of_birth: "{{date:-4y}}"}
+turns:
+  - at: "0d 13:00"
+    user: "Riya has had a fever since this morning"
+  - user: "she also vomited twice in the last hour"
+    expect:
+      - "reply.subject_ids[0] == ref('riya')                 # W1"
+      - "reply.episode_id == turn[0].reply.episode_id        # E2"
+      - "state.facts(subject=ref('aarav')).count == 0        # W10"

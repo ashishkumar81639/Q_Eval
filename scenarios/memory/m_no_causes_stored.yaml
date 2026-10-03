@@ -1,0 +1,14 @@
+id: m_no_causes_stored
+title: Possible causes and advice are not stored as facts
+rules: [M2]
+seed:
+  holder: {name: Amit, sex: male, date_of_birth: "1986-04-04"}
+  subjects:
+    - {ref: aarav, relation: son, name: Aarav, sex: male, date_of_birth: "{{date:-10y}}"}
+turns:
+  - at: "0d 16:00"
+    user: "Aarav has had loose motions 4 times since this morning and a mild fever"
+  - user: "he ate street food yesterday, no blood in the stool, he's drinking water fine, temperature 99.8F"
+final_expect:
+  - "state.facts(subject=ref('aarav')).none(value ~ 'gastro|food poisoning|infection|virus|viral|bacteria')   # M2"
+  - "state.facts(subject=ref('aarav')).none(value ~ '\\\\b(ORS|rest|hydrat\\\\w*|fluids)\\\\b' and not value ~ 'drink')   # M2"

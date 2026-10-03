@@ -1,0 +1,12 @@
+id: m_medication_in_general_question
+title: Holder's own condition mentioned in a general question is remembered on the holder
+rules: [M1, M4, M3]
+seed:
+  holder: {name: Pooja, sex: female, date_of_birth: "1990-09-19"}
+turns:
+  - at: "0d 11:00"
+    user: "I have hypothyroidism and take thyroxine every morning - can I drink coffee with it?"
+    expect:
+      - "state.facts(subject=ref('self')).any(value ~ 'thyro' or key ~ 'thyro')                         # M1"
+      - "state.facts(subject=ref('self')).where(value ~ 'thyro' or key ~ 'thyro').all(category == 'profile' or category == 'history')   # M4"
+      - "state.facts(subject=null).none(value ~ 'thyro' or key ~ 'thyro')                                 # M3"

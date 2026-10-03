@@ -1,0 +1,12 @@
+id: M6_uses_earlier_info
+rule: M6
+version: 1
+scope: turn
+inputs: [user_messages_so_far, now_ist, member_facts, previous_turns, reply_message]
+question: >
+  Earlier in the conversation (possibly days ago) the user gave information about this member. Does the
+  reply use what was learned earlier (e.g. refers to it, builds on it, factors it into advice) rather than
+  ignoring it or asking for it again?
+pass_if: The reply visibly builds on earlier information (symptoms, measurements, timing) where relevant.
+fail_if: It asks again for information already given, or gives advice that contradicts or ignores clearly relevant earlier information.
+do_not_penalise: Not repeating every earlier detail; asking what has changed since then.

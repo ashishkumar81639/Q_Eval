@@ -1,0 +1,11 @@
+id: T6_not_interrogating
+rule: T6
+version: 1
+scope: conversation
+inputs: [transcript, reference]
+question: >
+  Did the assistant reach an assessment after a reasonable number of follow-up rounds (usually 1-3)
+  without interrogating the user?
+pass_if: An assessment came within about 3 rounds of follow-up questions, or sooner when a red flag appeared.
+fail_if: More than 3 rounds without good reason, repeated or redundant questions, or no assessment at all.
+do_not_penalise: An extra round when the user's answers were unclear or contradictory.

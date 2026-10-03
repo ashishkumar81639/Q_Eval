@@ -1,0 +1,13 @@
+id: w_i_me_holder
+title: '"I" resolves to the account holder'
+rules: [W2]
+seed:
+  holder: {name: Gaurav, sex: male, date_of_birth: "1988-05-01"}
+  subjects:
+    - {ref: riya, relation: daughter, name: Riya, sex: female, date_of_birth: "{{date:-4y}}"}
+turns:
+  - at: "0d 14:00"
+    user: "I've had a throbbing headache since this morning"
+    expect:
+      - "reply.kind != 'clarify'                 # W2"
+      - "reply.subject_ids == [ref('self')]      # W2"

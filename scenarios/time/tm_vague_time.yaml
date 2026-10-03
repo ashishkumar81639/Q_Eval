@@ -1,0 +1,12 @@
+id: tm_vague_time
+title: A vague time keeps the user's words together with the date they said it
+rules: [TM1]
+seed:
+  holder: {name: Amit, sex: male, date_of_birth: "1986-04-04"}
+  subjects:
+    - {ref: aarav, relation: son, name: Aarav, sex: male, date_of_birth: "{{date:-8y}}"}
+turns:
+  - at: "0d 18:00"
+    user: "Aarav has had a bit of a cough for a while now, maybe a few weeks? hard to say exactly"
+    expect:
+      - "state.facts(subject=ref('aarav')).any(value ~ 'few weeks|a while' and has_date(value))   # TM1"

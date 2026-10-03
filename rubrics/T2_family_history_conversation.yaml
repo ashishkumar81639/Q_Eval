@@ -1,0 +1,13 @@
+id: T2_family_history_conversation
+rule: T2
+version: 1
+scope: conversation
+inputs: [members, family_history, member_facts, transcript]
+question: >
+  The household has recorded family history that could change the picture for the complaint discussed
+  (e.g. stroke or heart disease for headaches, chest pain, high blood pressure). Across the conversation,
+  did the assistant take that family history into account (ask about it, mention it, or let it raise
+  concern / urgency)?
+pass_if: The relevant family history is visibly considered at some point before or in the assessment.
+fail_if: The family history is relevant and never considered.
+do_not_penalise: Family history that is irrelevant to the complaint.

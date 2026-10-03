@@ -1,0 +1,6 @@
+{
+    "model": "claude-sonnet-4-5",
+    "max_steps": 20,
+    "prompt_sha": "ee1d81442ebf",
+    "commit": "541c3f8208a2"
+}

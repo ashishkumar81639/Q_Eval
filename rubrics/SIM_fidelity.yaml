@@ -1,0 +1,12 @@
+id: SIM_fidelity
+rule: T4
+version: 1
+scope: conversation
+inputs: [persona, transcript]
+question: >
+  This judges the SIMULATED USER, not the assistant. Did the simulated user stay in character, answer only
+  what the assistant asked, use only the hidden facts (saying they're not sure otherwise), and avoid
+  volunteering facts or medical terms?
+pass_if: In character throughout; no invented facts; no volunteering of unasked hidden facts.
+fail_if: It invented symptoms or details not in the persona, volunteered hidden facts before being asked, used medical jargon, or broke character.
+do_not_penalise: The scripted opening message and any scripted late reveal; natural phrasing.

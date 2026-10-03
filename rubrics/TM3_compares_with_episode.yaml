@@ -1,0 +1,14 @@
+id: TM3_compares_with_episode
+rule: TM3
+version: 1
+scope: turn
+inputs: [user_message, now_ist, episodes, previous_turns, reply_message, reply_fields]
+question: >
+  The user asks whether something is back or says it is "still" happening. Does the reply relate this to
+  the member's current or recent illness and how long ago it was last discussed?
+pass_if: >
+  It connects to the earlier illness and its timing (e.g. "you mentioned the fever 5 days ago; if it went
+  away and came back this may be a new illness"), or asks a targeted question to tell continuation from a
+  new problem.
+fail_if: It ignores the earlier illness or its timing, or assumes continuation after days of silence without checking.
+do_not_penalise: Brief wording.

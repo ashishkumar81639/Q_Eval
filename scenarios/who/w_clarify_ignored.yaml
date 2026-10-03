@@ -1,0 +1,21 @@
+id: w_clarify_ignored
+title: User ignores the clarify; it is not asked again and the name is treated as a new person
+rules: [W7, W10]
+seed:
+  holder: {name: Rakesh, sex: male, date_of_birth: "1985-03-03"}
+  subjects:
+    - {ref: meera, relation: daughter, name: Meera, sex: female, date_of_birth: "{{date:-6y}}"}
+turns:
+  - at: "0d 16:00"
+    user: "Mira has had a fever since this afternoon"
+    expect:
+      - "reply.kind == 'clarify'          # W4"
+  - user: "she also has a runny nose and is sneezing a lot"
+    expect:
+      - "reply.kind != 'clarify'          # W7"
+  - user: "her temperature is 100F now"
+    expect:
+      - "reply.kind != 'clarify'          # W7"
+final_expect:
+  - "state.subjects.any(name ~ '^mira$')                              # W7"
+  - "state.facts(subject=ref('meera')).none(value ~ 'fever|nose|sneez|100')   # W10"

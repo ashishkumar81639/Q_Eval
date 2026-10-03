@@ -1,0 +1,29 @@
+id: p_mother_headache_family_history
+title: Mother with new headaches and a family history of stroke
+rules: [T2, T4, T8]
+account:
+  holder: {name: Sanjay, sex: male, date_of_birth: "1975-10-10"}
+  subjects:
+    - {ref: mother, relation: mother, name: Kamala, sex: female, date_of_birth: "1958-02-14"}
+  facts:
+    - {subject_ref: null, category: family_history, key: maternal_aunt_stroke, value: "mother's sister had a stroke at 60"}
+    - {subject_ref: mother, category: profile, key: condition, value: "high blood pressure, takes medicine for it"}
+member_ref: mother
+opening: "my mother has been getting headaches for the last 3 days"
+opening_at: "0d 11:00"
+turn_gap_minutes: 4
+hidden_facts:
+  location:    {value: "at the back of her head", ask_keywords: [where, location, which part, side]}
+  severity:    {value: "moderate, she can still do her work", ask_keywords: [severe, how bad, worst, scale, intense]}
+  bp:          {value: "her BP machine showed 160/100 this morning", ask_keywords: [blood pressure, bp, measured, reading]}
+  vision:      {value: "no problems with her eyes", ask_keywords: [vision, see, eyes, blurr]}
+  weakness:    {value: "no weakness or numbness, speaking normally", ask_keywords: [weak, numb, speech, speak, face, arm, droop]}
+  meds:        {value: "she sometimes forgets her BP tablets", ask_keywords: [medicine, tablet, missed, taking, medication]}
+  sudden:      {value: "it came on gradually, not suddenly", ask_keywords: [sudden, thunderclap, came on, started]}
+unknown_answer: "I'd have to ask her"
+style: concerned adult son, clear full sentences
+reference:
+  urgency: [see_doctor_soon, urgent]
+  must_ask: [bp, weakness]
+  max_rounds: 3
+max_turns: 7

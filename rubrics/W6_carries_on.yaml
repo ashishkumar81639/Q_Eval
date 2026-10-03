@@ -1,0 +1,11 @@
+id: W6_carries_on
+rule: W6
+version: 1
+scope: turn
+inputs: [previous_turns, user_message, members, reply_message, reply_fields]
+question: >
+  The assistant earlier asked who the message was about, and the user has now answered. Does the reply
+  carry on with the ORIGINAL health question without making the user repeat it?
+pass_if: It addresses the original complaint for the identified member (asks relevant follow-ups or assesses).
+fail_if: It asks the user to repeat or restate the problem, or only acknowledges the person without continuing.
+do_not_penalise: A brief confirmation of who it is about.

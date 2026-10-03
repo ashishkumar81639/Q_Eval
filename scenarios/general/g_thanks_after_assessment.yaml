@@ -1,0 +1,12 @@
+id: g_thanks_after_assessment
+title: '"thanks" after an assessment gets a brief info reply'
+rules: [G5]
+seed:
+  holder: {name: Arjun, sex: male, date_of_birth: "1994-12-12"}
+turns:
+  - at: "0d 10:00"
+    user: "I've had a runny nose and sneezing since yesterday, no fever, otherwise I feel fine, eating and drinking normally"
+  - user: "thanks, that's helpful!"
+    expect:
+      - "reply.kind == 'info'               # G5"
+      - "words(reply.message) <= 80         # G5"

@@ -1,0 +1,18 @@
+id: e_gap_8_days_new
+title: A cough episode quiet for 8 days is over; a new message starts a new episode
+rules: [E4]
+twin: e_gap_6_days_continue
+seed:
+  holder: {name: Gaurav, sex: male, date_of_birth: "1990-05-01"}
+  subjects:
+    - {ref: riya, relation: daughter, name: Riya, sex: female, date_of_birth: "{{date:-4y}}"}
+  episodes:
+    - {ref: cough, subject_ref: riya, complaint: cough, opened_at: "{{t:-10d 10:00}}", last_activity_at: "{{t:-8d 10:00}}", status: open}
+turns:
+  - at: "0d 11:00"
+    user: "Riya has a cough again since this morning"
+    expect:
+      - "reply.episode_id != ref('cough')                                 # E4"
+      - "reply.episode_id != null                                         # E1"
+      - "state.episodes(subject=ref('riya'), status='open').count == 1    # E4"
+      - "state.episodes(subject=ref('riya'), status='closed').any(id == ref('cough'))   # E4"

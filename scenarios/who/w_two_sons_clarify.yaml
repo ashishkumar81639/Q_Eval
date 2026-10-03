@@ -1,0 +1,16 @@
+id: w_two_sons_clarify
+title: '"my son" with two sons asks which one'
+rules: [W3, R5]
+twin: w_only_son
+seed:
+  holder: {name: Gaurav, sex: male, date_of_birth: "1984-05-01"}
+  subjects:
+    - {ref: aarav, relation: son, name: Aarav, sex: male, date_of_birth: "{{date:-11y}}"}
+    - {ref: vihaan, relation: son, name: Vihaan, sex: male, date_of_birth: "{{date:-6y}}"}
+turns:
+  - at: "0d 15:00"
+    user: "my son has had a bad cough since yesterday"
+    expect:
+      - "reply.kind == 'clarify'                  # W3"
+      - "reply.options.count >= 2                 # R5"
+      - "diff.new_subjects.count == 0             # W3"

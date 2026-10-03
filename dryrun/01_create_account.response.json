@@ -1,0 +1,82 @@
+{
+    "account_id": "acc_c3_840fa43c",
+    "refs": {
+        "me": "s_4f1c6589",
+        "riya": "s_767227a2",
+        "cold": "e_56601bda"
+    },
+    "state": {
+        "account": {
+            "id": "acc_c3_840fa43c",
+            "name": "Gaurav",
+            "created_at": "2026-10-03T08:17:32+00:00"
+        },
+        "subjects": [
+            {
+                "id": "s_4f1c6589",
+                "account_id": "acc_c3_840fa43c",
+                "relation": "self",
+                "name": "Gaurav",
+                "sex": "male",
+                "date_of_birth": "1990-05-01",
+                "dob_estimated": false,
+                "created_at": "2026-10-03T08:17:32+00:00",
+                "label": "Gaurav (self, the account holder, male, 36 years)"
+            },
+            {
+                "id": "s_767227a2",
+                "account_id": "acc_c3_840fa43c",
+                "relation": "daughter",
+                "name": "Riya",
+                "sex": "female",
+                "date_of_birth": "2024-04-01",
+                "dob_estimated": false,
+                "created_at": "2026-10-03T08:17:32+00:00",
+                "label": "Riya (daughter, female, 2 years)"
+            }
+        ],
+        "episodes": [
+            {
+                "id": "e_56601bda",
+                "account_id": "acc_c3_840fa43c",
+                "subject_id": "s_767227a2",
+                "complaint": "cold",
+                "status": "open",
+                "outcome": null,
+                "opened_at": "2026-09-20T04:30:00+00:00",
+                "last_turn_at": "2026-09-21T04:30:00+00:00",
+                "closed_at": null
+            }
+        ],
+        "facts": [
+            {
+                "id": "f_ba15232a",
+                "account_id": "acc_c3_840fa43c",
+                "subject_id": null,
+                "episode_id": null,
+                "category": "family_history",
+                "key": "grandfather_diabetes",
+                "value": "type 2 diabetes",
+                "confidence": 1.0,
+                "source_turn_id": null,
+                "superseded": false,
+                "created_at": "2026-10-03T08:17:32+00:00"
+            },
+            {
+                "id": "f_4f26a1b4",
+                "account_id": "acc_c3_840fa43c",
+                "subject_id": "s_767227a2",
+                "episode_id": null,
+                "category": "profile",
+                "key": "allergy",
+                "value": "peanuts",
+                "confidence": 1.0,
+                "source_turn_id": null,
+                "superseded": false,
+                "created_at": "2026-10-03T08:17:32+00:00"
+            }
+        ],
+        "assessments": [],
+        "turns": []
+    }
+}

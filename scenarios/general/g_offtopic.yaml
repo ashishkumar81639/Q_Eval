@@ -1,0 +1,13 @@
+id: g_offtopic
+title: An off-topic request gets a brief info reply
+rules: [G5, R6]
+seed:
+  holder: {name: Gaurav, sex: male, date_of_birth: "1990-05-01"}
+turns:
+  - at: "0d 20:00"
+    user: "can you recommend a good movie to watch tonight?"
+    expect:
+      - "reply.kind == 'info'               # G5"
+      - "reply.subject_ids == []            # R6"
+      - "diff.new_facts.count == 0          # M2"
+      - "words(reply.message) <= 120        # G5"

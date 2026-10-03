@@ -1,0 +1,17 @@
+id: e_same_illness_continues
+title: A new symptom of the same illness continues the episode
+rules: [E2, E1]
+seed:
+  holder: {name: Gaurav, sex: male, date_of_birth: "1990-05-01"}
+  subjects:
+    - {ref: riya, relation: daughter, name: Riya, sex: female, date_of_birth: "{{date:-4y}}"}
+turns:
+  - at: "0d 09:00"
+    user: "Riya has had a cough since yesterday"
+    expect:
+      - "reply.episode_id != null                                              # E1"
+  - at: "0d 11:00"
+    user: "she also has a runny nose now"
+    expect:
+      - "reply.episode_id == turn[0].reply.episode_id                          # E2"
+      - "state.episodes(subject=ref('riya'), status='open').count == 1          # E2"

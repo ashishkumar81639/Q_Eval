@@ -1,0 +1,17 @@
+id: tm_still_fever_after_quiet_days
+title: '"fever again" after five quiet days is compared with the earlier episode'
+rules: [TM3]
+seed:
+  holder: {name: Gaurav, sex: male, date_of_birth: "1990-05-01"}
+  subjects:
+    - {ref: riya, relation: daughter, name: Riya, sex: female, date_of_birth: "{{date:-4y}}"}
+  episodes:
+    - {ref: fever, subject_ref: riya, complaint: fever, opened_at: "{{t:-7d 18:00}}", last_activity_at: "{{t:-5d 09:00}}", status: open}
+  facts:
+    - {subject_ref: riya, episode_ref: fever, category: episode, key: fever_onset, value: "fever since the evening of {{date:-7d}}"}
+turns:
+  - at: "0d 10:00"
+    user: "Riya has a fever again since this morning, is it back?"
+    expect:
+      - "reply.subject_ids[0] == ref('riya')     # W2"
+    judge: [TM3_compares_with_episode]

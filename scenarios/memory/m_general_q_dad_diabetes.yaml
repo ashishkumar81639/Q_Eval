@@ -1,0 +1,14 @@
+id: m_general_q_dad_diabetes
+title: General question mentioning dad's diabetes stores an account-level family fact
+rules: [M1, M3, G1, M4]
+seed:
+  holder: {name: Rahul, sex: male, date_of_birth: "1990-01-01"}
+turns:
+  - at: "0d 12:00"
+    user: "my dad has type 2 diabetes, does it run in families?"
+    expect:
+      - "reply.kind == 'info'                                                     # G1"
+      - "diff.new_subjects.count == 0                                             # M3"
+      - "state.facts().any(value ~ 'diabet' or key ~ 'diabet')                    # M1"
+      - "state.facts().where(value ~ 'diabet' or key ~ 'diabet').all(subject_id == null or category == 'family_history')  # M3"
+      - "state.facts().where(value ~ 'diabet' or key ~ 'diabet').any(value ~ 'dad|father' or key ~ 'dad|father')    # M3"

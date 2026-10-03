@@ -1,0 +1,16 @@
+id: g_dengue_symptoms
+title: General dengue question gets an info answer with no members tagged
+rules: [G1, G4, R6]
+seed:
+  holder: {name: Rahul, sex: male, date_of_birth: "1990-01-01"}
+  subjects:
+    - {ref: riya, relation: daughter, name: Riya, sex: female, date_of_birth: "{{date:-6y}}"}
+turns:
+  - at: "0d 12:00"
+    user: "what are the common symptoms of dengue?"
+    expect:
+      - "reply.kind == 'info'                 # G1"
+      - "reply.subject_ids == []              # G1"
+      - "reply.episode_id == null             # G1"
+      - "diff.opened_episodes.count == 0      # G1"
+      - "diff.new_subjects.count == 0         # G1"

@@ -1,0 +1,30 @@
+name: ci
+on:
+  push:
+  pull_request:
+jobs:
+  checks:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v6
+      - run: uv sync --locked
+      - name: Validate scenarios, personas, rubrics and rules
+        run: uv run qeval validate
+      - name: Lint and types
+        run: uv run ruff check . && uv run ruff format --check . && uv run mypy qeval
+      - name: Unit tests (no network)
+        run: uv run pytest tests/unit -q
+  live-smoke:
+    # Opt-in: runs only when the repository has the secrets configured.
+    if: ${{ github.event_name == 'push' && vars.QEVAL_LIVE == '1' }}
+    needs: checks
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v6
+      - run: uv sync --locked
+      - run: QEVAL_LIVE=1 uv run pytest tests/live -k smoke -v
+        env:
+          QEVAL_TOKEN: ${{ secrets.QEVAL_TOKEN }}
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}

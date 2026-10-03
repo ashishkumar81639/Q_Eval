@@ -1,0 +1,15 @@
+id: w_correct_name_no_clarify
+title: The correctly spelled name resolves without a clarify (twin of w_misspelling_meera_mira)
+rules: [W2, W4]
+twin: w_misspelling_meera_mira
+seed:
+  holder: {name: Rakesh, sex: male, date_of_birth: "1985-03-03"}
+  subjects:
+    - {ref: meera, relation: daughter, name: Meera, sex: female, date_of_birth: "{{date:-6y}}"}
+turns:
+  - at: "0d 16:00"
+    user: "Meera has had a fever since this afternoon"
+    expect:
+      - "reply.kind != 'clarify'                  # W2"
+      - "reply.subject_ids == [ref('meera')]      # W2"
+      - "diff.new_subjects.count == 0             # W4"

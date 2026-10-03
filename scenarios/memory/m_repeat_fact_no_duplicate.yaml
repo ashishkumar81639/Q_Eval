@@ -1,0 +1,15 @@
+id: m_repeat_fact_no_duplicate
+title: A fact repeated by the user is not stored twice
+rules: [M5, T1]
+seed:
+  holder: {name: Neha, sex: female, date_of_birth: "1992-02-11"}
+  subjects:
+    - {ref: riya, relation: daughter, name: Riya, sex: female, date_of_birth: "{{date:-4y}}"}
+  facts:
+    - {subject_ref: riya, category: profile, key: allergy, value: "peanuts"}
+turns:
+  - at: "0d 18:00"
+    user: "Riya has had a cough since yesterday. remember she's allergic to peanuts"
+    expect:
+      - "state.facts(subject=ref('riya')).where(value ~ 'peanut').count == 1   # M5"
+      - "reply.message !~ '(any|known|does she have)[^.?]{0,25}allerg[^?]*\\\\?'  # T1"

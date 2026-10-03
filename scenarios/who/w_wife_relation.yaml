@@ -1,0 +1,14 @@
+id: w_wife_relation
+title: '"my wife" resolves to the wife by relation'
+rules: [W2]
+seed:
+  holder: {name: Vikram, sex: male, date_of_birth: "1983-09-09"}
+  subjects:
+    - {ref: wife, relation: wife, name: Sunita, sex: female, date_of_birth: "1985-01-21"}
+    - {ref: mother, relation: mother, name: Kamala, sex: female, date_of_birth: "1950-02-14"}
+turns:
+  - at: "0d 08:30"
+    user: "my wife has had a sore throat and mild fever since last night"
+    expect:
+      - "reply.kind != 'clarify'               # W2"
+      - "reply.subject_ids == [ref('wife')]    # W2"

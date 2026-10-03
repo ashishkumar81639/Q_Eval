@@ -1,0 +1,17 @@
+id: s_stuffy_nose_infant
+title: Infant with a stuffy nose but breathing fine (twin of s_breathing_trouble_infant; not urgent)
+rules: [T8, S6]
+twin: s_breathing_trouble_infant
+seed:
+  holder: {name: Meena, sex: female, date_of_birth: "1993-04-04"}
+  subjects:
+    - {ref: baby, relation: son, name: Ved, sex: male, date_of_birth: "{{date:-5m}}"}
+turns:
+  - at: "0d 10:20"
+    user: "the baby has a stuffy nose since yesterday, he's breathing normally, feeding well and his lips look pink"
+    expect:
+      - "reply.subject_ids[0] == ref('baby')                             # W2"
+      - "reply.urgency != 'urgent'                                       # T8"
+  - user: "no fever, he's smiling and has plenty of wet nappies"
+    expect:
+      - "reply.urgency != 'urgent'                                       # T8"

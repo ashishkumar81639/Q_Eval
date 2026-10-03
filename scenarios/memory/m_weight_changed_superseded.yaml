@@ -1,0 +1,17 @@
+id: m_weight_changed_superseded
+title: A changed weight replaces the old one, which stays as superseded
+rules: [M5, M4]
+seed:
+  holder: {name: Amit, sex: male, date_of_birth: "1986-04-04"}
+  subjects:
+    - {ref: aarav, relation: son, name: Aarav, sex: male, date_of_birth: "{{date:-7y}}"}
+  facts:
+    - {subject_ref: aarav, category: profile, key: weight, value: "22 kg"}
+turns:
+  - at: "0d 18:00"
+    user: "just so you know, Aarav weighs 24 kg now, we weighed him at the clinic today"
+final_expect:
+  - "state.facts(subject=ref('aarav')).any(value ~ '24')                              # M5"
+  - "state.facts(subject=ref('aarav')).none(value ~ '22')                             # M5"
+  - "state.facts(subject=ref('aarav'), superseded=true).any(value ~ '22')             # M5"
+  - "state.facts(subject=ref('aarav')).where(value ~ '\\\\bkg\\\\b').count == 1       # M5"

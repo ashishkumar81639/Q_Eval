@@ -1,0 +1,5 @@
+id: p_toddler_gastro
+title: "Simulated user: Toddler vomiting, mild dehydration risk"
+rules: [T1, T4, T5, T6, T8, R9]
+k: 3
+persona: p_toddler_gastro

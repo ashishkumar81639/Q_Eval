@@ -1,0 +1,23 @@
+id: p_adult_cold
+title: Healthy adult with a common cold (over-triage check)
+rules: [T6, T8, S6, R9]
+account:
+  holder: {name: Arjun, sex: male, date_of_birth: "1994-12-12"}
+opening: "I've got a blocked nose and sore throat since yesterday"
+opening_at: "0d 10:00"
+turn_gap_minutes: 4
+hidden_facts:
+  fever:      {value: "no fever, I checked, 98.6F", ask_keywords: [fever, temperature, temp, hot, chills]}
+  breathing:  {value: "breathing is fine", ask_keywords: [breath, chest, wheez]}
+  cough:      {value: "a slight dry cough", ask_keywords: [cough]}
+  eating:     {value: "eating and drinking normally", ask_keywords: [eat, drink, appetite, fluid]}
+  conditions: {value: "no health problems, don't take any medicines", ask_keywords: [condition, medic, health problem, asthma, diabet, history]}
+  tried:      {value: "just warm water with honey", ask_keywords: [tried, taken, anything for, medicine]}
+  severity:   {value: "throat is a bit scratchy, swallowing is ok", ask_keywords: [swallow, severe, how bad, pain, scale]}
+unknown_answer: "don't know"
+style: busy young professional, terse, types quickly in lowercase
+reference:
+  urgency: [self_care]
+  must_ask: [fever]
+  max_rounds: 3
+max_turns: 7

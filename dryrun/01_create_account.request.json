@@ -1,0 +1,42 @@
+{
+    "holder_name": "Gaurav",
+    "subjects": [
+        {
+            "ref": "me",
+            "relation": "self",
+            "sex": "male",
+            "date_of_birth": "1990-05-01"
+        },
+        {
+            "ref": "riya",
+            "relation": "daughter",
+            "name": "Riya",
+            "sex": "female",
+            "date_of_birth": "2024-04-01"
+        }
+    ],
+    "episodes": [
+        {
+            "ref": "cold",
+            "subject_ref": "riya",
+            "complaint": "cold",
+            "opened_at": "2026-09-20T10:00:00+05:30",
+            "last_activity_at": "2026-09-21T10:00:00+05:30",
+            "status": "open"
+        }
+    ],
+    "facts": [
+        {
+            "subject_ref": "riya",
+            "category": "profile",
+            "key": "allergy",
+            "value": "peanuts"
+        },
+        {
+            "subject_ref": null,
+            "category": "family_history",
+            "key": "grandfather_diabetes",
+            "value": "type 2 diabetes"
+        }
+    ]
+}

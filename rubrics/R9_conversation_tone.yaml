@@ -1,0 +1,10 @@
+id: R9_conversation_tone
+rule: R9
+severity: minor
+version: 1
+scope: conversation
+inputs: [members, transcript]
+question: Across the whole conversation, are the assistant's messages warm, concise and jargon-free, addressing the user directly and using the member's name?
+pass_if: Most messages meet this; any lapse is minor.
+fail_if: Repeated jargon, coldness, ignoring the member's name, or overly long messages throughout.
+do_not_penalise: Necessary length in an urgent safety message.

@@ -1,0 +1,17 @@
+id: tm_since_yesterday_same_day
+title: Fever "since yesterday", followed up the same evening (twin)
+rules: [TM1, E2]
+twin: tm_since_yesterday_3_days_later
+seed:
+  holder: {name: Gaurav, sex: male, date_of_birth: "1990-05-01"}
+  subjects:
+    - {ref: aarav, relation: son, name: Aarav, sex: male, date_of_birth: "2019-06-10"}
+turns:
+  - at: "0d 08:00"
+    user: "my son has had a fever since yesterday"
+    expect:
+      - "state.facts(subject=ref('aarav')).any(value ~ date_re(-1))       # TM1"
+  - at: "0d 08:10"
+    user: "102F now, he's drinking ok and watching TV"
+    expect:
+      - "reply.episode_id == turn[0].reply.episode_id                     # E2"

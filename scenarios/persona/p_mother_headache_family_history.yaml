@@ -1,0 +1,6 @@
+id: p_mother_headache_family_history
+title: "Simulated user: Mother with new headaches and a family history of stroke"
+rules: [T2, T4, T8]
+k: 3
+persona: p_mother_headache_family_history
+final_judge: [T2_family_history_conversation]

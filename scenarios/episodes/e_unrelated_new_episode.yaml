@@ -1,0 +1,16 @@
+id: e_unrelated_new_episode
+title: A clearly unrelated injury starts a new episode
+rules: [E2, E1]
+seed:
+  holder: {name: Amit, sex: male, date_of_birth: "1986-04-04"}
+  subjects:
+    - {ref: aarav, relation: son, name: Aarav, sex: male, date_of_birth: "{{date:-9y}}"}
+turns:
+  - at: "-1d 18:00"
+    user: "Aarav has had a fever since this morning"
+  - at: "0d 11:00"
+    user: "different thing - Aarav fell off his bike and hurt his wrist, it's swollen and he can't bend it"
+    expect:
+      - "reply.episode_id != null                             # E1"
+      - "reply.episode_id != turn[0].reply.episode_id         # E2"
+      - "state.facts(subject=ref('aarav'), this_turn=true).all(episode_id != turn[0].reply.episode_id or category != 'episode')  # E2"

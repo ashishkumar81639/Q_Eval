@@ -1,0 +1,14 @@
+id: t_followup_questions_fever
+title: First message about a toddler fever gets focused follow-up questions
+rules: [T4, T5, R5, R2, T3]
+seed:
+  holder: {name: Gaurav, sex: male, date_of_birth: "1990-05-01"}
+  subjects:
+    - {ref: riya, relation: daughter, name: Riya, sex: female, date_of_birth: "{{date:-2y}}"}
+turns:
+  - at: "0d 20:00"
+    user: "my daughter has had a fever since yesterday"
+    expect:
+      - "reply.kind == 'followup'                  # R2"
+      - "reply.subject_ids == [ref('riya')]        # W2"
+    judge: [T5_question_count, R2_kind_fits, T3_screens_danger_first, T4_relevant_questions_turn]

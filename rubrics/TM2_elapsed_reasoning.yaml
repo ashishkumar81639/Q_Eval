@@ -1,0 +1,11 @@
+id: TM2_elapsed_reasoning
+rule: TM2
+version: 1
+scope: turn
+inputs: [user_messages_so_far, now_ist, member_facts, reply_message, reply_fields]
+question: >
+  Does the assistant reason about durations from WHEN things were said rather than from now? For example
+  "fever since yesterday" said 3 days ago means the fever is now about 4 days old.
+pass_if: Any duration the reply states or relies on is correct given the timestamps (within about a day), or the reply doesn't depend on a duration.
+fail_if: It treats an earlier relative time as relative to now (e.g. calls a 4-day fever "1 day" or "since yesterday"), or states a wrong duration.
+do_not_penalise: Rounding ("about 4 days", "4-5 days").

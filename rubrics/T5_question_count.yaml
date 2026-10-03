@@ -1,0 +1,12 @@
+id: T5_question_count
+rule: T5
+version: 1
+scope: turn
+inputs: [user_message, reply_message, flag_reason]
+question: >
+  Count the distinct questions the reply asks the user (sub-questions about the same item, like "Have you
+  measured her temperature? If yes, what was it?", count as one; a single question offering examples counts
+  as one). Does it ask at most 3, with the most decision-relevant first, in simple words?
+pass_if: 1 to 3 distinct questions, most relevant first, simple words.
+fail_if: 4 or more distinct questions; or the most important question buried after minor ones; or jargon.
+do_not_penalise: Question marks inside examples ("any rash?") that belong to one listed question.

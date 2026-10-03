@@ -1,0 +1,13 @@
+id: R9_tone
+rule: R9
+severity: minor
+version: 1
+scope: turn
+auto_when: "reply.kind in ['followup', 'clarify', 'assessment']"
+inputs: [user_message, members, reply_fields, reply_message]
+question: Is the message warm, concise and jargon-free, addressing the user directly and using family members' names when known?
+pass_if: Friendly, direct ("you", "your"), plain words, reasonable length for the situation, uses the member's name if one is known.
+fail_if: >
+  Cold or robotic; uses unexplained medical jargon (e.g. "pyrexia", "febrile", "tachypnoea"); refers to a
+  member as "the patient" or "the child" when their name is known; or is far longer than needed.
+do_not_penalise: Medical terms that are immediately explained in plain words. Length needed for an urgent safety message.

@@ -1,0 +1,19 @@
+id: s_infant_fever_5mo
+title: 5-month-old with the same mild fever (twin; S7 does not apply, urgent would be over-triage)
+rules: [T8, R2]
+twin: s_infant_fever_7w
+seed:
+  holder: {name: Kavya, sex: female, date_of_birth: "1994-06-30"}
+  subjects:
+    - {ref: baby, relation: daughter, name: Myra, sex: female, date_of_birth: "{{date:-5m}}"}
+turns:
+  - at: "0d 14:00"
+    user: "my baby has had a temperature of 100.6F since this morning, she's feeding a bit less than usual"
+    expect:
+      - "reply.subject_ids[0] == ref('baby')               # W2"
+      - "reply.kind in ['followup', 'assessment']          # R2"
+  - user: "no rash, she's alert and wakes for feeds, still 100.6F"
+    expect:
+      - "reply.kind in ['followup', 'assessment']          # R2"
+final_expect:
+  - "state.assessments(subject=ref('baby')).none(urgency == 'urgent')   # T8"

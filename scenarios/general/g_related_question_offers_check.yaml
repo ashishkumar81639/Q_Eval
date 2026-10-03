@@ -1,0 +1,13 @@
+id: g_related_question_offers_check
+title: General question about toddlers relates to the household toddler -> offers to check
+rules: [G2, G1]
+seed:
+  holder: {name: Neha, sex: female, date_of_birth: "1992-02-11"}
+  subjects:
+    - {ref: riya, relation: daughter, name: Riya, sex: female, date_of_birth: "{{date:-2y}}"}
+turns:
+  - at: "0d 12:00"
+    user: "how many colds a year is normal for a 2 year old?"
+    expect:
+      - "reply.kind == 'info'           # G1"
+    judge: [G2_offers_check]

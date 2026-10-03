@@ -1,0 +1,13 @@
+id: g_greeting
+title: A greeting gets a brief friendly info reply and stores nothing
+rules: [G5, R6, M2]
+seed:
+  holder: {name: Gaurav, sex: male, date_of_birth: "1990-05-01"}
+turns:
+  - at: "0d 09:00"
+    user: "hi there!"
+    expect:
+      - "reply.kind == 'info'               # G5"
+      - "reply.subject_ids == []            # R6"
+      - "diff.new_facts.count == 0          # M2"
+      - "words(reply.message) <= 80         # G5"

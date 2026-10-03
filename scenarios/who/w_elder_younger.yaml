@@ -1,0 +1,20 @@
+id: w_elder_younger
+title: '"the younger one" / "the elder one" resolve by age'
+rules: [W2, E5, W10]
+seed:
+  holder: {name: Sneha, sex: female, date_of_birth: "1986-08-08"}
+  subjects:
+    - {ref: ananya, relation: daughter, name: Ananya, sex: female, date_of_birth: "{{date:-10y}}"}
+    - {ref: riya, relation: daughter, name: Riya, sex: female, date_of_birth: "{{date:-4y}}"}
+turns:
+  - at: "0d 09:00"
+    user: "the younger one has had an earache since last night"
+    expect:
+      - "reply.kind != 'clarify'                 # W2"
+      - "reply.subject_ids[0] == ref('riya')     # W2"
+  - user: "and the elder one has a sore throat since this morning"
+    expect:
+      - "reply.kind != 'clarify'                           # W2"
+      - "reply.subject_ids[0] == ref('ananya')             # W2"
+      - "reply.episode_id != turn[0].reply.episode_id      # E5"
+      - "state.facts(subject=ref('riya')).none(value ~ 'throat')   # W10"

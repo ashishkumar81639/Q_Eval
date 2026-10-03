@@ -1,0 +1,14 @@
+id: T4_relevant_questions
+rule: T4
+version: 1
+scope: conversation
+inputs: [members, member_facts, transcript, reference]
+question: >
+  Across the conversation, did the assistant's follow-up questions target what matters for the decision:
+  onset and duration, severity, measurements (e.g. temperature), associated symptoms, what's been tried,
+  relevant conditions, medicines and allergies, age and sex if unknown, and pregnancy when relevant?
+pass_if: Questions focus on decision-relevant items, including the reference's must_ask items when listed.
+fail_if: >
+  Key decision items were never asked when they mattered (e.g. hydration in a vomiting toddler), or
+  questions were mostly irrelevant, or it asked for information it already had.
+do_not_penalise: Skipping questions because a red flag led straight to an assessment.

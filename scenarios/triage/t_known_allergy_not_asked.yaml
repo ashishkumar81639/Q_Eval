@@ -1,0 +1,17 @@
+id: t_known_allergy_not_asked
+title: Seeded allergy and medicine are used, not asked again
+rules: [T1]
+seed:
+  holder: {name: Neha, sex: female, date_of_birth: "1992-02-11"}
+  subjects:
+    - {ref: riya, relation: daughter, name: Riya, sex: female, date_of_birth: "{{date:-5y}}"}
+  facts:
+    - {subject_ref: riya, category: profile, key: allergy, value: "allergic to penicillin"}
+    - {subject_ref: riya, category: profile, key: condition, value: "mild asthma, uses a blue inhaler when needed"}
+turns:
+  - at: "0d 17:00"
+    user: "Riya has an itchy rash on her arms since this afternoon"
+    expect:
+      - "trace.called('get_subject')                                                    # T1"
+      - "reply.message !~ '(any|known|does she have)[^.?]{0,25}allerg[^?]*\\\\?'       # T1"
+      - "reply.message !~ '(any|does she have)[^.?]{0,30}(medical conditions|health conditions|asthma)[^?]*\\\\?'  # T1"

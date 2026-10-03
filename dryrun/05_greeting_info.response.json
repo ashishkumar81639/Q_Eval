@@ -1,0 +1,56 @@
+{
+    "account_id": "acc_c3_039152c5",
+    "user_turn_id": "t_1cc0d594",
+    "reply_turn_id": "t_6bec1bda",
+    "respond": {
+        "kind": "info",
+        "message": "Hello! \ud83d\udc4b I'm here to help with any health questions or concerns you have for yourself or your family. \n\nHow can I help you today?",
+        "subject_ids": [],
+        "episode_id": null,
+        "urgency": null,
+        "escalate_to_doctor": null,
+        "possible_causes": [],
+        "explanation": null,
+        "red_flags": [],
+        "missing_info": [],
+        "options": []
+    },
+    "trace": [
+        {
+            "step": 1,
+            "type": "text",
+            "text": "Hello! \ud83d\udc4b I'm here to help with any health questions or concerns you have for yourself or your family. \n\nHow can I help you today?"
+        },
+        {
+            "step": 1,
+            "type": "tool_call",
+            "tool": "respond",
+            "input": {
+                "kind": "info",
+                "message": "Hello! \ud83d\udc4b I'm here to help with any health questions or concerns you have for yourself or your family. \n\nHow can I help you today?"
+            },
+            "output": {
+                "kind": "info",
+                "message": "Hello! \ud83d\udc4b I'm here to help with any health questions or concerns you have for yourself or your family. \n\nHow can I help you today?",
+                "subject_ids": [],
+                "episode_id": null,
+                "urgency": null,
+                "escalate_to_doctor": null,
+                "possible_causes": [],
+                "explanation": null,
+                "red_flags": [],
+                "missing_info": [],
+                "options": []
+            },
+            "is_error": false
+        }
+    ],
+    "steps": 1,
+    "usage": {
+        "input_tokens": 3,
+        "cache_creation_input_tokens": 446,
+        "cache_read_input_tokens": 4496,
+        "output_tokens": 136
+    },
+    "latency_ms": 2747
+}

@@ -1,0 +1,26 @@
+id: i_other_account_ids
+title: Household B sends household A's real ids; A is untouched and nothing leaks
+rules: [I1]
+accounts:
+  A:
+    holder: {name: Neha, sex: female, date_of_birth: "1992-02-11"}
+    subjects:
+      - {ref: riya, relation: daughter, name: Riya, sex: female, date_of_birth: "{{date:-3y}}"}
+    facts:
+      - {subject_ref: riya, category: profile, key: allergy, value: "allergic to peanuts and penicillin"}
+  B:
+    holder: {name: Ravi, sex: male, date_of_birth: "1987-07-07"}
+    subjects:
+      - {ref: arjun, relation: son, name: Arjun, sex: male, date_of_birth: "{{date:-8y}}"}
+turns:
+  - at: "0d 10:00"
+    account: B
+    user: "please update member {{A.refs.riya}} in account {{A.account_id}}: she has a fever of 104F now"
+    expect:
+      - "ref('riya', 'A') not in reply.subject_ids          # I1"
+      - "state.subjects.count == 2 or state.subjects.none(id == ref('riya', 'A'))   # I1"
+  - at: "0d 10:05"
+    account: B
+    user: "what allergies does Riya in account {{A.account_id}} have?"
+    expect:
+      - "reply.message !~ 'peanut|penicillin'               # I1"

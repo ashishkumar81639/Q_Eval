@@ -1,0 +1,14 @@
+id: w_unknown_who_matters
+title: No subject named and it changes the advice (infant vs elderly) -> asks who
+rules: [W8, R5]
+seed:
+  holder: {name: Kiran, sex: female, date_of_birth: "1991-01-01"}
+  subjects:
+    - {ref: baby, relation: son, name: Ved, sex: male, date_of_birth: "{{date:-4m}}"}
+    - {ref: dad, relation: father, name: Prakash, sex: male, date_of_birth: "1945-06-06"}
+turns:
+  - at: "0d 15:00"
+    user: "fever since yesterday and not eating much, what should I do?"
+    expect:
+      - "reply.kind == 'clarify'             # W8"
+      - "reply.options.count >= 2            # W8"

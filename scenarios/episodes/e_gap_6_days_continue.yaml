@@ -1,0 +1,17 @@
+id: e_gap_6_days_continue
+title: A cough episode quiet for 6 days continues (twin)
+rules: [E2, E4]
+twin: e_gap_8_days_new
+seed:
+  holder: {name: Gaurav, sex: male, date_of_birth: "1990-05-01"}
+  subjects:
+    - {ref: riya, relation: daughter, name: Riya, sex: female, date_of_birth: "{{date:-4y}}"}
+  episodes:
+    - {ref: cough, subject_ref: riya, complaint: cough, opened_at: "{{t:-8d 10:00}}", last_activity_at: "{{t:-6d 10:00}}", status: open}
+turns:
+  - at: "0d 11:00"
+    user: "Riya's cough is still there and now she has a sore throat too"
+    expect:
+      - "reply.episode_id == ref('cough')                                 # E2"
+      - "state.episodes(subject=ref('riya'), status='open').count == 1    # E2"
+      - "state.episodes(subject=ref('riya'), status='closed').count == 0  # E4"

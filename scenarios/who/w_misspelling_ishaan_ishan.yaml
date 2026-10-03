@@ -1,0 +1,13 @@
+id: w_misspelling_ishaan_ishan
+title: '"Ishan" with a seeded son "Ishaan" leads to a clarify'
+rules: [W4]
+seed:
+  holder: {name: Rakesh, sex: male, date_of_birth: "1985-03-03"}
+  subjects:
+    - {ref: ishaan, relation: son, name: Ishaan, sex: male, date_of_birth: "{{date:-9y}}"}
+turns:
+  - at: "0d 16:00"
+    user: "Ishan fell while playing and his knee is scraped and swollen"
+    expect:
+      - "reply.kind == 'clarify'           # W4"
+      - "diff.new_subjects.count == 0      # W4"

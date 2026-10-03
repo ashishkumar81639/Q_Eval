@@ -1,0 +1,258 @@
+{
+    "account": {
+        "id": "acc_c3_840fa43c",
+        "name": "Gaurav",
+        "created_at": "2026-10-03T08:17:32+00:00"
+    },
+    "subjects": [
+        {
+            "id": "s_4f1c6589",
+            "account_id": "acc_c3_840fa43c",
+            "relation": "self",
+            "name": "Gaurav",
+            "sex": "male",
+            "date_of_birth": "1990-05-01",
+            "dob_estimated": false,
+            "created_at": "2026-10-03T08:17:32+00:00",
+            "label": "Gaurav (self, the account holder, male, 36 years)"
+        },
+        {
+            "id": "s_767227a2",
+            "account_id": "acc_c3_840fa43c",
+            "relation": "daughter",
+            "name": "Riya",
+            "sex": "female",
+            "date_of_birth": "2024-04-01",
+            "dob_estimated": false,
+            "created_at": "2026-10-03T08:17:32+00:00",
+            "label": "Riya (daughter, female, 2 years)"
+        }
+    ],
+    "episodes": [
+        {
+            "id": "e_56601bda",
+            "account_id": "acc_c3_840fa43c",
+            "subject_id": "s_767227a2",
+            "complaint": "cold",
+            "status": "closed",
+            "outcome": "auto-closed: no activity for over a week",
+            "opened_at": "2026-09-20T04:30:00+00:00",
+            "last_turn_at": "2026-09-21T04:30:00+00:00",
+            "closed_at": "2026-09-28T14:30:00+00:00"
+        },
+        {
+            "id": "e_698a51fa",
+            "account_id": "acc_c3_840fa43c",
+            "subject_id": "s_767227a2",
+            "complaint": "fever",
+            "status": "open",
+            "outcome": null,
+            "opened_at": "2026-09-28T14:30:00+00:00",
+            "last_turn_at": "2026-09-28T14:40:00+00:00",
+            "closed_at": null
+        }
+    ],
+    "facts": [
+        {
+            "id": "f_689e7eb2",
+            "account_id": "acc_c3_840fa43c",
+            "subject_id": "s_767227a2",
+            "episode_id": "e_698a51fa",
+            "category": "episode",
+            "key": "fever_onset",
+            "value": "since Sun 27 Sep 2026",
+            "confidence": 1.0,
+            "source_turn_id": "t_7020631a",
+            "superseded": false,
+            "created_at": "2026-09-28T14:30:00+00:00"
+        },
+        {
+            "id": "f_e27113a5",
+            "account_id": "acc_c3_840fa43c",
+            "subject_id": "s_767227a2",
+            "episode_id": "e_698a51fa",
+            "category": "episode",
+            "key": "fever_duration",
+            "value": "about 1 day",
+            "confidence": 1.0,
+            "source_turn_id": "t_7020631a",
+            "superseded": false,
+            "created_at": "2026-09-28T14:30:00+00:00"
+        },
+        {
+            "id": "f_a2dc43c8",
+            "account_id": "acc_c3_840fa43c",
+            "subject_id": "s_767227a2",
+            "episode_id": "e_698a51fa",
+            "category": "episode",
+            "key": "temperature_measured",
+            "value": "103 F (39.4 C) on Mon 28 Sep 2026",
+            "confidence": 1.0,
+            "source_turn_id": "t_b33edec7",
+            "superseded": false,
+            "created_at": "2026-09-28T14:40:00+00:00"
+        },
+        {
+            "id": "f_22953260",
+            "account_id": "acc_c3_840fa43c",
+            "subject_id": "s_767227a2",
+            "episode_id": "e_698a51fa",
+            "category": "episode",
+            "key": "fluid_intake",
+            "value": "not drinking much",
+            "confidence": 1.0,
+            "source_turn_id": "t_b33edec7",
+            "superseded": false,
+            "created_at": "2026-09-28T14:40:00+00:00"
+        },
+        {
+            "id": "f_5a353c3c",
+            "account_id": "acc_c3_840fa43c",
+            "subject_id": "s_767227a2",
+            "episode_id": "e_698a51fa",
+            "category": "episode",
+            "key": "alertness",
+            "value": "very sleepy and a bit hard to wake up, noted Mon 28 Sep 2026, 8:10 PM",
+            "confidence": 1.0,
+            "source_turn_id": "t_b33edec7",
+            "superseded": false,
+            "created_at": "2026-09-28T14:40:00+00:00"
+        },
+        {
+            "id": "f_ba6d39df",
+            "account_id": "acc_c3_840fa43c",
+            "subject_id": "s_767227a2",
+            "episode_id": "e_698a51fa",
+            "category": "episode",
+            "key": "red_flag_present",
+            "value": "reduced consciousness, hard to wake",
+            "confidence": 1.0,
+            "source_turn_id": "t_b33edec7",
+            "superseded": false,
+            "created_at": "2026-09-28T14:40:00+00:00"
+        },
+        {
+            "id": "f_ba15232a",
+            "account_id": "acc_c3_840fa43c",
+            "subject_id": null,
+            "episode_id": null,
+            "category": "family_history",
+            "key": "grandfather_diabetes",
+            "value": "type 2 diabetes",
+            "confidence": 1.0,
+            "source_turn_id": null,
+            "superseded": false,
+            "created_at": "2026-10-03T08:17:32+00:00"
+        },
+        {
+            "id": "f_4f26a1b4",
+            "account_id": "acc_c3_840fa43c",
+            "subject_id": "s_767227a2",
+            "episode_id": null,
+            "category": "profile",
+            "key": "allergy",
+            "value": "peanuts",
+            "confidence": 1.0,
+            "source_turn_id": null,
+            "superseded": false,
+            "created_at": "2026-10-03T08:17:32+00:00"
+        }
+    ],
+    "assessments": [
+        {
+            "id": "a_51f9a27e",
+            "account_id": "acc_c3_840fa43c",
+            "subject_id": "s_767227a2",
+            "episode_id": "e_698a51fa",
+            "turn_id": "t_479c0f09",
+            "urgency": "urgent",
+            "escalate_to_doctor": true,
+            "payload": {
+                "kind": "assessment",
+                "message": "**Riya needs urgent medical attention now.**\n\nA 2-year-old with a high fever (103\u00b0F / 39.4\u00b0C) who is very sleepy and hard to wake up is a serious concern. This could be a sign of severe infection, dehydration, or a serious illness like meningitis.\n\n**What to do immediately:**\n- **Take Riya to the nearest emergency department now**, or call your local emergency number if you cannot transport her safely.\n- Do not wait to see if she improves.\n\n**While preparing to go:**\n- Try to give her small sips of water or an oral rehydration solution if she will take it.\n- Note if she develops a rash that doesn't fade when you press a glass against it, has a stiff neck, or has a seizure \u2014 tell the medical team immediately.\n\n**Why this is urgent:**\nReduced consciousness (being very sleepy and hard to wake) in a young child with fever is a red flag that requires immediate evaluation. Young children can deteriorate quickly with infections.\n\nThis is not a diagnosis, but Riya needs to be assessed by a doctor urgently to determine the cause and get appropriate treatment.",
+                "subject_ids": [
+                    "s_767227a2"
+                ],
+                "episode_id": "e_698a51fa",
+                "urgency": "urgent",
+                "escalate_to_doctor": true,
+                "possible_causes": [
+                    "Severe infection (such as meningitis, sepsis, or severe pneumonia)",
+                    "Dehydration from poor fluid intake",
+                    "Other serious febrile illness"
+                ],
+                "explanation": "**Riya needs urgent medical attention now.**\n\nA 2-year-old with a high fever (103\u00b0F / 39.4\u00b0C) who is very sleepy and hard to wake up is a serious concern. This could be a sign of severe infection, dehydration, or a serious illness like meningitis.\n\n**What to do immediately:**\n- **Take Riya to the nearest emergency department now**, or call your local emergency number if you cannot transport her safely.\n- Do not wait to see if she improves.\n\n**While preparing to go:**\n- Try to give her small sips of water or an oral rehydration solution if she will take it.\n- Note if she develops a rash that doesn't fade when you press a glass against it, has a stiff neck, or has a seizure \u2014 tell the medical team immediately.\n\n**Why this is urgent:**\nReduced consciousness (being very sleepy and hard to wake) in a young child with fever is a red flag that requires immediate evaluation. Young children can deteriorate quickly with infections.\n\nThis is not a diagnosis, but Riya needs to be assessed by a doctor urgently to determine the cause and get appropriate treatment.",
+                "red_flags": [
+                    "Very sleepy or hard to wake up (already present)",
+                    "Rash that doesn't fade under a glass",
+                    "Stiff neck or sensitivity to light",
+                    "Seizure or fit",
+                    "Breathing difficulty or very fast breathing",
+                    "Blue lips or skin",
+                    "Refusing all fluids or not urinating"
+                ],
+                "missing_info": [],
+                "options": []
+            },
+            "created_at": "2026-09-28T14:40:00+00:00"
+        }
+    ],
+    "turns": [
+        {
+            "id": "t_7020631a",
+            "account_id": "acc_c3_840fa43c",
+            "seq": 1,
+            "role": "user",
+            "kind": null,
+            "content": "my daughter has had a fever since yesterday",
+            "subject_id": "s_767227a2",
+            "subject_ids": [
+                "s_767227a2"
+            ],
+            "episode_id": "e_698a51fa",
+            "created_at": "2026-09-28T14:30:00+00:00"
+        },
+        {
+            "id": "t_4cb718a7",
+            "account_id": "acc_c3_840fa43c",
+            "seq": 2,
+            "role": "assistant",
+            "kind": "followup",
+            "content": "I'm sorry to hear Riya has a fever. Let me ask a few questions to understand how she's doing:\n\n1. **Have you measured her temperature?** If yes, what was it and when?\n\n2. **How is she behaving?** Is she playing, eating, and drinking normally, or does she seem very unwell, drowsy, or unusually fussy?\n\n3. **Does she have any other symptoms** like cough, runny nose, vomiting, diarrhea, rash, or pain anywhere?",
+            "subject_id": "s_767227a2",
+            "subject_ids": [
+                "s_767227a2"
+            ],
+            "episode_id": "e_698a51fa",
+            "created_at": "2026-09-28T14:30:10+00:00"
+        },
+        {
+            "id": "t_b33edec7",
+            "account_id": "acc_c3_840fa43c",
+            "seq": 3,
+            "role": "user",
+            "kind": null,
+            "content": "she has 103F, not drinking much, very sleepy and a bit hard to wake up",
+            "subject_id": "s_767227a2",
+            "subject_ids": [
+                "s_767227a2"
+            ],
+            "episode_id": "e_698a51fa",
+            "created_at": "2026-09-28T14:40:00+00:00"
+        },
+        {
+            "id": "t_479c0f09",
+            "account_id": "acc_c3_840fa43c",
+            "seq": 4,
+            "role": "assistant",
+            "kind": "assessment",
+            "content": "**Riya needs urgent medical attention now.**\n\nA 2-year-old with a high fever (103\u00b0F / 39.4\u00b0C) who is very sleepy and hard to wake up is a serious concern. This could be a sign of severe infection, dehydration, or a serious illness like meningitis.\n\n**What to do immediately:**\n- **Take Riya to the nearest emergency department now**, or call your local emergency number if you cannot transport her safely.\n- Do not wait to see if she improves.\n\n**While preparing to go:**\n- Try to give her small sips of water or an oral rehydration solution if she will take it.\n- Note if she develops a rash that doesn't fade when you press a glass against it, has a stiff neck, or has a seizure \u2014 tell the medical team immediately.\n\n**Why this is urgent:**\nReduced consciousness (being very sleepy and hard to wake) in a young child with fever is a red flag that requires immediate evaluation. Young children can deteriorate quickly with infections.\n\nThis is not a diagnosis, but Riya needs to be assessed by a doctor urgently to determine the cause and get appropriate treatment.",
+            "subject_id": "s_767227a2",
+            "subject_ids": [
+                "s_767227a2"
+            ],
+            "episode_id": "e_698a51fa",
+            "created_at": "2026-09-28T14:40:19+00:00"
+        }
+    ]
+}

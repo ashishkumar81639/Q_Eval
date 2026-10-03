@@ -1,0 +1,17 @@
+id: w_only_son
+title: '"my son" with one son and one daughter resolves without asking'
+rules: [W2, R6, E1]
+twin: w_two_sons_clarify
+seed:
+  holder: {name: Gaurav, sex: male, date_of_birth: "1988-05-01"}
+  subjects:
+    - {ref: aarav, relation: son, name: Aarav, sex: male, date_of_birth: "{{date:-8y}}"}
+    - {ref: riya, relation: daughter, name: Riya, sex: female, date_of_birth: "{{date:-4y}}"}
+turns:
+  - at: "0d 15:00"
+    user: "my son has had a stomach ache since this morning"
+    expect:
+      - "reply.kind != 'clarify'                    # W2"
+      - "reply.subject_ids == [ref('aarav')]        # W2"
+      - "reply.episode_id != null                   # E1"
+      - "diff.new_subjects.count == 0               # W2"

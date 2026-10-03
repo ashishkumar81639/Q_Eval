@@ -1,0 +1,14 @@
+id: s_blanching_rash_child
+title: Rash that fades under a glass in a well child (twin of s_nonblanching_rash_child; not urgent)
+rules: [T8, S6]
+twin: s_nonblanching_rash_child
+seed:
+  holder: {name: Gaurav, sex: male, date_of_birth: "1990-05-01"}
+  subjects:
+    - {ref: riya, relation: daughter, name: Riya, sex: female, date_of_birth: "{{date:-30m}}"}
+turns:
+  - at: "0d 19:40"
+    user: "Riya has some red spots on her tummy that fade when I press a glass on them, no fever, she's playing normally"
+    expect:
+      - "reply.subject_ids[0] == ref('riya')       # W2"
+      - "reply.urgency != 'urgent'                 # T8"

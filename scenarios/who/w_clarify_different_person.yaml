@@ -1,0 +1,21 @@
+id: w_clarify_different_person
+title: After a misspelling clarify, "different person" is added and the original question continues
+rules: [W6, W5]
+seed:
+  holder: {name: Rakesh, sex: male, date_of_birth: "1985-03-03"}
+  subjects:
+    - {ref: ishaan, relation: son, name: Ishaan, sex: male, date_of_birth: "{{date:-9y}}"}
+turns:
+  - at: "0d 16:00"
+    user: "Ishan has had a headache since this morning"
+    expect:
+      - "reply.kind == 'clarify'                           # W4"
+  - user: "no, a different Ishan - he's my nephew, 12 years old, staying with us"
+    expect:
+      - "state.subjects.count == 3                         # W6"
+      - "diff.new_subjects.count == 1                      # W5"
+      - "diff.new_subjects.first.relation ~ 'nephew'       # W5"
+      - "reply.subject_ids[0] != ref('ishaan')             # W6"
+      - "reply.kind in ['followup', 'assessment']          # W6"
+      - "state.facts(subject=ref('ishaan')).none(value ~ 'headache')   # W10"
+    judge: [W6_carries_on]

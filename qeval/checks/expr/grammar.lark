@@ -1,0 +1,50 @@
+// Scenario expectation language (build.md 4.4). Parsed once at validation time; never eval()'d.
+
+?start: expr
+
+?expr: or_expr
+
+?or_expr: and_expr
+        | or_expr "or" and_expr          -> or_
+
+?and_expr: not_expr
+         | and_expr "and" not_expr       -> and_
+
+?not_expr: "not" not_expr                -> not_
+         | comparison
+
+?comparison: atom
+           | atom COMP_OP atom           -> compare
+           | atom NOT_IN atom            -> compare
+
+?atom: path
+     | literal
+     | list
+     | "(" expr ")"
+
+path: NAME trailer*
+
+?trailer: "." NAME                       -> attr
+        | "[" expr "]"                   -> index
+        | "(" [arg ("," arg)*] ")"       -> call
+
+?arg: NAME "=" expr                      -> kwarg
+    | expr
+
+list: "[" [expr ("," expr)*] "]"
+
+?literal: STRING                         -> string
+        | SIGNED_NUMBER                  -> number
+        | "true"                         -> true
+        | "false"                        -> false
+        | "null"                         -> null
+
+NOT_IN.2: /not\s+in\b/
+COMP_OP: "==" | "!=" | "<=" | ">=" | "<" | ">" | "!~" | "~" | /in\b/
+
+STRING: /'(?:[^'\\]|\\.)*'/ | /"(?:[^"\\]|\\.)*"/
+
+%import common.CNAME -> NAME
+%import common.SIGNED_NUMBER
+%import common.WS
+%ignore WS

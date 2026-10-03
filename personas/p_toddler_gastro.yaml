@@ -1,0 +1,29 @@
+id: p_toddler_gastro
+title: Toddler vomiting, mild dehydration risk
+rules: [T1, T4, T5, T6, T8, R9]
+account:
+  holder: {name: Neha, sex: female, date_of_birth: "1992-02-11"}
+  subjects:
+    - {ref: anaya, relation: daughter, name: Anaya, sex: female, date_of_birth: "{{date:-26m}}"}
+  facts:
+    - {subject_ref: anaya, category: profile, key: allergy, value: "no known allergies"}
+member_ref: anaya
+opening: "my daughter has been throwing up since this morning"
+opening_at: "0d 13:00"
+turn_gap_minutes: 3
+hidden_facts:
+  onset:      {value: "around 7am today", ask_keywords: [when, start, since, how long]}
+  vomits:     {value: "4 times so far", ask_keywords: [how many, times, often, how much]}
+  diarrhoea:  {value: "yes, twice, watery", ask_keywords: [diarr, loose, stool, poo, potty, bowel]}
+  fever:      {value: "99.5F", ask_keywords: [fever, temperature, temp, hot, warm]}
+  hydration:  {value: "only small sips of water, peed once since morning", ask_keywords: [drink, fluid, pee, urine, wet, nappy, diaper, sips, keep down, dehydrat]}
+  behaviour:  {value: "a bit tired but still playing with her toys", ask_keywords: [behav, active, play, sleepy, drowsy, alert, energy, tired, lethargic, how is she]}
+  tried:      {value: "nothing yet", ask_keywords: [tried, given, medicine, gave, anything for]}
+  blood:      {value: "no blood", ask_keywords: [blood, green, colour, color, bile]}
+unknown_answer: "not sure"
+style: worried mother, short messages, a little Hinglish, no medical words
+reference:
+  urgency: [see_doctor_soon, self_care]
+  must_ask: [hydration]
+  max_rounds: 3
+max_turns: 8

@@ -1,0 +1,13 @@
+id: t_mild_cold_self_care
+title: Mild cold in a healthy adult is not over-triaged
+rules: [T8, T6, S6]
+twin: t_cold_breathing_difficulty
+seed:
+  holder: {name: Arjun, sex: male, date_of_birth: "1994-12-12"}
+turns:
+  - at: "0d 10:00"
+    user: "I've had a runny nose and sneezing since yesterday, no fever, otherwise I feel fine"
+  - user: "no other symptoms, eating and drinking normally, no breathing problems, I'm 31 and healthy"
+final_expect:
+  - "state.assessments(subject=ref('self')).count >= 1                  # T6"
+  - "state.assessments(subject=ref('self')).none(urgency == 'urgent')   # T8"

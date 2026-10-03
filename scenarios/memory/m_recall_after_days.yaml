@@ -1,0 +1,21 @@
+id: m_recall_after_days
+title: What was learned three days ago is used later
+rules: [M6, E2, TM2]
+seed:
+  holder: {name: Gaurav, sex: male, date_of_birth: "1990-05-01"}
+  subjects:
+    - {ref: riya, relation: daughter, name: Riya, sex: female, date_of_birth: "{{date:-4y}}"}
+turns:
+  - at: "-3d 19:00"
+    user: "Riya has had a fever since this afternoon, 101F"
+  - at: "-3d 19:05"
+    user: "she's drinking ok, no rash, just a bit less playful"
+  - at: "0d 10:00"
+    user: "she still has the fever, what should I do?"
+    expect:
+      - "reply.subject_ids[0] == ref('riya')                       # W1"
+      - "reply.episode_id == turn[0].reply.episode_id              # E2"
+      - "trace.called('get_subject') or trace.called('list_subjects')   # M6"
+      - "reply.message !~ 'how long has she had|when did (the|her) fever start'   # M6"
+      - "reply.message !~ '(any|is there a|has she got a) rash[^?]*\\\\?|is she drinking[^?]*\\\\?'   # M6"
+    judge: [TM2_elapsed_reasoning, M6_uses_earlier_info]

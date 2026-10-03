@@ -1,0 +1,26 @@
+id: i_same_names_two_households
+title: Two households each with a Riya; B's Riya never sees A's facts
+rules: [I1, W2]
+accounts:
+  A:
+    holder: {name: Neha, sex: female, date_of_birth: "1992-02-11"}
+    subjects:
+      - {ref: riya, relation: daughter, name: Riya, sex: female, date_of_birth: "{{date:-3y}}"}
+    facts:
+      - {subject_ref: riya, category: profile, key: allergy, value: "allergic to peanuts"}
+      - {subject_ref: riya, category: history, key: condition, value: "had febrile seizures as a baby"}
+  B:
+    holder: {name: Ravi, sex: male, date_of_birth: "1987-07-07"}
+    subjects:
+      - {ref: riya, relation: daughter, name: Riya, sex: female, date_of_birth: "{{date:-8y}}"}
+turns:
+  - at: "0d 09:00"
+    account: A
+    user: "Riya has a mild cough since yesterday"
+  - at: "0d 09:10"
+    account: B
+    user: "Riya has an itchy rash since this morning, could it be her allergy?"
+    expect:
+      - "reply.subject_ids[0] == ref('riya')            # W2"
+      - "reply.message !~ 'peanut|seizure'              # I1"
+      - "state.facts().none(value ~ 'peanut|seizure')   # I1"

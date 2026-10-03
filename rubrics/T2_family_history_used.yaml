@@ -1,0 +1,12 @@
+id: T2_family_history_used
+rule: T2
+version: 1
+scope: turn
+inputs: [user_message, previous_turns, members, family_history, member_facts, reply_message]
+question: >
+  The household has family history that could change the picture for this complaint (chest pain, diabetes
+  symptoms, headaches or stroke signs, cancer worries, inherited conditions, a child's recurring problems).
+  Does the reply take that family history into account?
+pass_if: The reply mentions or clearly uses the relevant family history (e.g. raises urgency, asks a targeted question, or explains why it matters).
+fail_if: The family history is relevant and the reply ignores it entirely.
+do_not_penalise: Not mentioning family history that is irrelevant to the complaint.

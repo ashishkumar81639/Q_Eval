@@ -1,0 +1,29 @@
+id: w_switch_members_no_mixing
+title: Switching between two children never mixes their symptoms
+rules: [W10, E5, W1]
+seed:
+  holder: {name: Gaurav, sex: male, date_of_birth: "1988-05-01"}
+  subjects:
+    - {ref: aarav, relation: son, name: Aarav, sex: male, date_of_birth: "{{date:-8y}}"}
+    - {ref: riya, relation: daughter, name: Riya, sex: female, date_of_birth: "{{date:-4y}}"}
+turns:
+  - at: "0d 10:00"
+    user: "Aarav has had a sore throat since yesterday"
+    expect:
+      - "reply.subject_ids[0] == ref('aarav')                         # W2"
+  - user: "also Riya has had diarrhoea 3 times since this morning"
+    expect:
+      - "reply.subject_ids[0] == ref('riya')                          # W10"
+      - "reply.episode_id != turn[0].reply.episode_id                 # E5"
+      - "state.facts(this_turn=true).all(subject_id != ref('aarav'))  # W10"
+  - user: "Aarav's throat is still sore and he has a slight fever now"
+    expect:
+      - "reply.subject_ids[0] == ref('aarav')                         # W10"
+      - "reply.episode_id == turn[0].reply.episode_id                 # E2"
+  - user: "he's also not eating much since lunch"
+    expect:
+      - "reply.subject_ids[0] == ref('aarav')                         # W1"
+      - "state.facts(this_turn=true).all(subject_id != ref('riya'))   # W10"
+final_expect:
+  - "state.facts(subject=ref('aarav')).none(value ~ 'diarr|loose|stool')   # W10"
+  - "state.facts(subject=ref('riya')).none(value ~ 'throat')               # W10"

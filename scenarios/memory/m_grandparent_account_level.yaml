@@ -1,0 +1,15 @@
+id: m_grandparent_account_level
+title: Grandmother's cancer is account-level family history, not a new member
+rules: [M3, M1, M4]
+seed:
+  holder: {name: Sneha, sex: female, date_of_birth: "1986-08-08"}
+  subjects:
+    - {ref: ananya, relation: daughter, name: Ananya, sex: female, date_of_birth: "{{date:-12y}}"}
+turns:
+  - at: "0d 12:00"
+    user: "my grandmother had breast cancer in her 40s, is that something I should keep in mind for myself?"
+    expect:
+      - "diff.new_subjects.count == 0                                                           # M3"
+      - "state.facts(category='family_history').any(value ~ 'breast' or key ~ 'breast')          # M1"
+      - "state.facts().where(value ~ 'breast' or key ~ 'breast').any(value ~ 'grand' or key ~ 'grand')   # M3"
+      - "state.facts(subject=ref('ananya')).none(value ~ 'cancer')                               # M3"

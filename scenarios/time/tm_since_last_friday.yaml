@@ -1,0 +1,11 @@
+id: tm_since_last_friday
+title: '"since last Friday" becomes the absolute date of the most recent Friday'
+rules: [TM1, TM4]
+seed:
+  holder: {name: Gaurav, sex: male, date_of_birth: "1990-05-01"}
+turns:
+  - at: "0d 21:00"
+    user: "I've had a dry cough since last Friday"
+    expect:
+      - "state.facts(subject=ref('self')).any(value ~ last_weekday_re('Fri'))        # TM1"
+      - "state.facts(subject=ref('self')).none(value ~ 'last friday')                # TM1"
