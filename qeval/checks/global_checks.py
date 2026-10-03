@@ -365,6 +365,19 @@ def m4(t: NormTurn, run: NormRun) -> Verdict:
     )
 
 
+def _key_words(key: str | None) -> set[str]:
+    return {w for w in re.split(r"[^a-z]+", (key or "").lower()) if len(w) > 2}
+
+
+def _same_statement(a: dict, b: dict) -> bool:
+    """Equal values only mean the same fact if the value says what it is about ("22 kg", "allergic to
+    peanuts"), or the keys share a word (weight / weight_kg). "no" for fever and "no" for sore_throat are
+    different facts."""
+    if len(T.content_words(a.get("value") or "")) >= 2 or any(ch.isdigit() for ch in a.get("value") or ""):
+        return True
+    return bool(_key_words(a.get("key")) & _key_words(b.get("key")))
+
+
 @check(id="M5_no_duplicate_fact", rule="M5")
 def m5(t: NormTurn, run: NormRun) -> Verdict:
     facts = _facts_this_turn(t)
@@ -383,7 +396,11 @@ def m5(t: NormTurn, run: NormRun) -> Verdict:
     dups = []
     for f in facts:
         for o in older:
-            if o.get("subject_id") == f.get("subject_id") and norm(o.get("value")) == norm(f.get("value")):
+            if (
+                o.get("subject_id") == f.get("subject_id")
+                and norm(o.get("value")) == norm(f.get("value"))
+                and _same_statement(o, f)
+            ):
                 dups.append({"new": _fact_ev(f), "existing": _fact_ev(o)})
                 break
     return Verdict(

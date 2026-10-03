@@ -489,7 +489,11 @@ def calibrate(
             for r in rows
             if r["scenario_run_id"] == sr_id
             and r["kind"] == "judge"
-            and r["check_id"].split("#")[0] == it["rubric"]
+            and (
+                r["check_id"] == it["check_id"]
+                if it.get("check_id")
+                else r["check_id"].split("#")[0] == it["rubric"]
+            )
             and r["turn_idx"] == it.get("turn_idx")
         ]
         if not match:

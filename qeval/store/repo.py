@@ -193,7 +193,7 @@ class Repo:
             r = c.execute(
                 sa.select(gradings.c.grading_id)
                 .where(gradings.c.run_id == run_id, gradings.c.status == "done")
-                .order_by(gradings.c.created_at.desc(), gradings.c.grading_id.desc())
+                .order_by(gradings.c.finished_at.desc(), gradings.c.created_at.desc())
                 .limit(1)
             ).first()
             return r[0] if r else None

@@ -737,3 +737,15 @@ def test_w10_ignores_general_question_facts_on_holder():
     ]
     run = build_norm_run(sc, sr, rows, "2026-10-01")
     assert run_check(REGISTRY["W10_facts_on_tagged_members"], run.turns[0], run).status == "n/a"
+
+
+def test_m5_ignores_bare_yes_no_values_with_different_keys():
+    from qeval.checks.global_checks import _same_statement
+
+    assert not _same_statement({"key": "fever", "value": "no"}, {"key": "sore_throat", "value": "no"})
+    assert _same_statement({"key": "fever", "value": "no"}, {"key": "fever_present", "value": "no"})
+    assert _same_statement(
+        {"key": "allergy", "value": "allergic to peanuts"},
+        {"key": "food_allergy", "value": "allergic to peanuts"},
+    )
+    assert _same_statement({"key": "weight", "value": "22 kg"}, {"key": "wt", "value": "22 kg"})
