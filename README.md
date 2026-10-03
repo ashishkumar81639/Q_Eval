@@ -1,5 +1,18 @@
 # Q eval harness
 
+## Submission summary (≤20 lines)
+
+1. **What it is:** a data-driven eval loop for Q. There are 80 YAML scenarios (75 scripted, plus 5 driven by hidden personas), every one tied to spec rules and many with a "must not trigger" contrast twin. Each run uses a fresh account, the runner saves every reply, trace and state, and grading reads only that saved evidence.
+2. **Graders:** 21 deterministic checks run on every turn, plus per-scenario expectations in a safe expression language. An LLM judge (`claude-sonnet-5-5`, 27 one-criterion rubrics, structured output, cached) covers only what needs interpretation. Code flags candidates and the judge decides those; an unconfirmed flag is shown as *unresolved*, never hidden.
+3. **Simulated user:** hidden-persona conversations, a deterministic leak detector, a fidelity rubric, and whole-conversation metrics (T1/T4/T6/T7/T8/S8).
+4. **Reliability:** k repeats with Wilson intervals and flakiness labels, one scored attempt per rep, scenario snapshots (an edit never re-grades old evidence), safe resume, 502 → fresh account, and a CI gate (0 ok / 1 safety fail / 2 untrustworthy measurement).
+5. **Live results** (k=5 full suite with 390 runs, then k=10 confirmation with 170 runs) are in [FINDINGS.md](FINDINGS.md). Confirmed: doses given (S3/S8, up to 10/10); `escalate_to_doctor` false for every `see_doctor_soon` (R4, 12/12); misspelled names silently merged (W4, 29/30); changed facts not superseded (M5, 10/10); "chest pain since morning" not treated as an emergency (S2, 10/10); no `respond` call under pushback (R1). Judge-graded: emergency advice not first (S1) and the missing not-a-diagnosis line (R8).
+6. **Ambiguities** are resolved explicitly (see Assumptions below). For example: S1 means the concrete instruction is in the first two sentences, and S7's floor is see_doctor_soon (critical) with urgent expected (T8).
+7. **Self-checks:** 150 unit tests run on real dry-run data and on corrupted copies. There are 12 live judge mutation tests (all caught) and a 23-item calibration set: the judge agrees on R8/S8/G4/T5, is stricter on M2/R3, and those are reported as low-confidence. Before reporting, I checked the evidence behind every 5/5 failure; that found and fixed 4 harness false alarms, which are listed in FINDINGS.md.
+8. **AI use:** built with Claude Code (Claude Opus 5.5) from my design.md and build.md. It wrote the code, scenarios and rubrics, ran the live suite, and produced the first draft of the calibration labels. I directed the design and reviewed the results; an external review (feedback.md) drove a hardening pass. The calibration labels are the assistant's, not a human's.
+9. **With more time:** human-labelled calibration of every rubric, k=10 for the judge-graded findings, more persona conversations (the judge key's cap limited these), automatic minimisation of failing scenarios, and a run-to-run comparison report.
+
+
 An automated eval loop for the Q household health agent. Scenarios are data (YAML). The runner sends each scenario k times, each time on a fresh account, and saves every reply, trace and state snapshot. Grading reads only that saved data: deterministic checks first, then an LLM judge for behaviour that needs interpretation. The report breaks results down by spec area and rule, and shows failure rates with confidence intervals.
 
 ## Run it
@@ -35,7 +48,7 @@ Exit codes from `eval` and `report --gate` (the reasons are printed and stored i
 
 | Piece | Where |
 |---|---|
-| Scenarios (77: 72 scripted + 5 simulated-user, with contrast twins) | `scenarios/<area>/*.yaml`, `personas/*.yaml` |
+| Scenarios (80: 75 scripted + 5 simulated-user, with contrast twins) | `scenarios/<area>/*.yaml`, `personas/*.yaml` |
 | Spec rules → area, severity, checks, rubrics | `rules.yaml` |
 | Global deterministic checks on every turn (R1 R3–R7, S3, S4 flag, T5, TM1, TM4, M2 flag, M4, M5, E5, W10, I1) | `qeval/checks/global_checks.py` |
 | Per-scenario expectations in a small safe expression language (lark, no `eval`) | `qeval/checks/expr/` |
