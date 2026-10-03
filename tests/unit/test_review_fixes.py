@@ -691,3 +691,49 @@ def test_w10_named_switch_passes():
     assert run_check(REGISTRY["W10_no_silent_switch"], run.turns[1], run).status == "pass"
     same = _two_kid_run([("Riya has a fever", "s_r"), ("she also vomited", "s_r")])
     assert run_check(REGISTRY["W10_no_silent_switch"], same.turns[1], same).status == "pass"
+
+
+def test_w10_ignores_general_question_facts_on_holder():
+    """M1 + R6: a general question tags no members but still stores the user's own facts; not a W10 failure."""
+    sc = Scenario.model_validate(
+        {
+            "id": "g",
+            "title": "t",
+            "rules": ["M1"],
+            "turns": [{"user": "I have hypothyroidism, can I drink coffee?"}],
+        }
+    )
+    state = {
+        "account": {"id": "acc"},
+        "subjects": [{"id": "s_me", "relation": "self", "name": "Pooja"}],
+        "facts": [
+            {
+                "id": "f1",
+                "subject_id": "s_me",
+                "category": "profile",
+                "key": "condition",
+                "value": "hypothyroidism",
+                "source_turn_id": "u1",
+            }
+        ],
+    }
+    sr = {
+        "id": "sr",
+        "rep": 1,
+        "status": "valid",
+        "accounts": {"main": {"account_id": "acc", "refs": {}}},
+        "initial_states": {"main": {"account": {"id": "acc"}, "subjects": state["subjects"]}},
+        "final_states": {},
+    }
+    rows = [
+        {
+            "idx": 0,
+            "account_key": "main",
+            "sent_text": "x",
+            "received_at": "2026-10-01T10:00:00+05:30",
+            "state_after": state,
+            "response": {"user_turn_id": "u1", "respond": respond("info"), "trace": []},
+        }
+    ]
+    run = build_norm_run(sc, sr, rows, "2026-10-01")
+    assert run_check(REGISTRY["W10_facts_on_tagged_members"], run.turns[0], run).status == "n/a"

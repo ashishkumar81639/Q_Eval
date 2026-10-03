@@ -1,12 +1,16 @@
 id: g_thanks_after_assessment
 title: '"thanks" after an assessment gets a brief info reply'
 rules: [G5]
+notes: >
+  The first message gives everything a triage needs, so most runs end in an assessment. The thanks is only
+  graded when it really follows an assessment; a follow-up question left unanswered changes the situation.
 seed:
   holder: {name: Arjun, sex: male, date_of_birth: "1994-12-12"}
 turns:
   - at: "0d 10:00"
-    user: "I've had a runny nose and sneezing since yesterday, no fever, otherwise I feel fine, eating and drinking normally"
+    user: "I've had a runny nose and sneezing since yesterday, no fever, no cough, no breathing problems, eating and drinking normally, I'm 31, healthy and take no medicines"
+  - user: "no other symptoms at all"
   - user: "thanks, that's helpful!"
     expect:
-      - "reply.kind == 'info'               # G5"
-      - "words(reply.message) <= 80         # G5"
+      - "turns.where(it.kind == 'assessment').count == 0 or reply.kind == 'info'                     # G5"
+      - "turns.where(it.kind == 'assessment').count == 0 or words(reply.message) <= 80                # G5"

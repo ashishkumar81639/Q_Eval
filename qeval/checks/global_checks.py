@@ -421,6 +421,10 @@ def w10(t: NormTurn, run: NormRun) -> Verdict:
     member_facts = [f for f in facts if f.get("subject_id") and f.get("category") != "family_history"]
     if not member_facts:
         return Verdict("n/a", message="no member facts this turn")
+    if not t.reply.get("subject_ids"):
+        # General question / small talk: R6 wants no members tagged, while M1 still wants the user's own
+        # health facts remembered, so facts on a member with an empty subject_ids are allowed.
+        return Verdict("n/a", message="no members tagged (general question)")
     sids = set(t.reply.get("subject_ids") or [])
     bad = [
         {**_fact_ev(f), "member": t.state.member_name(f.get("subject_id"))}

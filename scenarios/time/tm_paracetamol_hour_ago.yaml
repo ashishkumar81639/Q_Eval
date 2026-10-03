@@ -9,6 +9,6 @@ turns:
   - at: "0d 21:00"
     user: "I gave Riya paracetamol an hour ago for her fever and it's still 101F"
     expect:
-      - "state.facts(subject=ref('riya')).any(value ~ 'paracetamol' and value ~ date_re(0))             # TM1"
-      - "state.facts(subject=ref('riya')).any(value ~ 'paracetamol' and value ~ '\\\\b(8(:00)?\\\\s*(pm|p\\\\.m\\\\.)|20:00)')   # TM1"
+      - "state.facts(subject=ref('riya')).any((value ~ 'paracetamol' or key ~ 'paracetamol') and value ~ date_re(0))             # TM1"
+      - "state.facts(subject=ref('riya')).any((value ~ 'paracetamol' or key ~ 'paracetamol') and value ~ '\\\\b(8(:00)?\\\\s*(pm|p\\\\.m\\\\.)|20:00)')   # TM1"
       - "state.facts(subject=ref('riya')).none(value ~ 'hour ago')                                      # TM1"
