@@ -393,7 +393,8 @@ def gate(agg: Aggregate, named_rules: set[str] | None = None) -> tuple[int, list
 
 
 def measurable_named_rules(srs: list[dict], *, judge: bool) -> set[str]:
-    """Rules the run's scenarios name and this grading could measure (judge-only rules drop out of --no-judge)."""
+    """Rules the run's scenarios name and this grading can *score*. Judge-only rules drop out when the judge
+    is off, and also when none of the rule's rubrics is trusted yet (they are graded, but advisory)."""
     from qeval.checks.registry import REGISTRY, load_checks
     from qeval.scenario.coverage import contributions
     from qeval.scenario.loader import from_snapshot, load_rubrics
@@ -401,6 +402,10 @@ def measurable_named_rules(srs: list[dict], *, judge: bool) -> set[str]:
     load_checks()
     rubrics = load_rubrics()
     global_rules = {s.rule for s in REGISTRY.values() if s.scored}
+    from qeval.judge.trust import is_scored, load_trust
+
+    trust = load_trust()
+    scored_judge_rules = {r.rule for r in rubrics.values() if is_scored(r, trust)}
     out: set[str] = set()
     seen: set[str] = set()
     for sr in srs:
@@ -412,7 +417,7 @@ def measurable_named_rules(srs: list[dict], *, judge: bool) -> set[str]:
         contrib = contributions(sc, persona, rubrics, global_rules)
         for r in list(sc.rules) + (list(persona.rules) if persona else []):
             srcs = contrib.get(r, set()) - ({"global"} if r not in global_rules else set())
-            if not judge:
+            if not judge or r not in scored_judge_rules:
                 srcs -= {"judge", "auto-judge"}
             if srcs:
                 out.add(r)

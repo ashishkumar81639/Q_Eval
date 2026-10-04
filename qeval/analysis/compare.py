@@ -85,6 +85,8 @@ def compare(repo: Repo, run_id: str, base_gid: str, new_gid: str) -> dict:
             }
         )
 
+    for c in changes:
+        c["verdict_changed"] = c["before"] != c["after"]
     summary: dict[str, Counter] = defaultdict(Counter)
     for c in changes:
         summary[c["check"].split("#")[0]][
@@ -98,7 +100,9 @@ def compare(repo: Repo, run_id: str, base_gid: str, new_gid: str) -> dict:
         "new_rubric_versions": nv,
         "relabelled_scenarios": sorted(relabelled),
         "changed": len(changes),
-        "critical_changed": sum(1 for c in changes if c["severity"] == "critical"),
+        "verdict_changed": sum(1 for c in changes if c["verdict_changed"]),
+        "status_only_changed": sum(1 for c in changes if not c["verdict_changed"]),
+        "critical_changed": sum(1 for c in changes if c["severity"] == "critical" and c["verdict_changed"]),
         "summary": {k: dict(v) for k, v in sorted(summary.items())},
         "changes": changes,
     }
@@ -112,8 +116,9 @@ def write_comparison(data: dict, out_dir: Path) -> list[Path]:
     lines = [
         f"# Grading comparison for run `{data['run_id']}`",
         "",
-        f"Baseline `{data['baseline_grading']}` vs new `{data['new_grading']}`. {data['changed']} results changed, "
-        f"{data['critical_changed']} on critical (safety) checks. The baseline grading is unchanged in the database.",
+        f"Baseline `{data['baseline_grading']}` vs new `{data['new_grading']}`: {data['verdict_changed']} verdicts "
+        f"changed ({data['critical_changed']} on critical safety checks); {data['status_only_changed']} kept their "
+        f"verdict but became advisory or scored. The baseline grading is unchanged in the database.",
         "",
     ]
     if data["relabelled_scenarios"]:
@@ -121,11 +126,26 @@ def write_comparison(data: dict, out_dir: Path) -> list[Path]:
             f"Relabelled scenarios (same conversation, current labels): {', '.join(data['relabelled_scenarios'])}",
             "",
         ]
-    lines += ["## Changes by check", "", "| Check | Change | Count |", "|---|---|---|"]
-    for chk, counts in data["summary"].items():
-        for change, n in sorted(counts.items(), key=lambda x: -x[1]):
-            lines.append(f"| `{chk}` | {change} | {n} |")
-    crit = [c for c in data["changes"] if c["severity"] == "critical"]
+
+    def table(title: str, rows: list[dict]) -> list[str]:
+        cnt: dict[str, Counter] = defaultdict(Counter)
+        for c in rows:
+            adv = "" if c["after_scored"] in (None, True) else " (advisory)"
+            cnt[c["check"].split("#")[0]][f"{c['before']} -> {c['after']}{adv}"] += 1
+        out = [f"## {title}", "", "| Check | Change | Count |", "|---|---|---|"]
+        for chk, counts in sorted(cnt.items()):
+            for change, n in sorted(counts.items(), key=lambda x: -x[1]):
+                out.append(f"| `{chk}` | {change} | {n} |")
+        return out + [""]
+
+    lines += table(
+        f"Verdict changes ({data['verdict_changed']})", [c for c in data["changes"] if c["verdict_changed"]]
+    )
+    lines += table(
+        f"Same verdict, only scored/advisory status changed ({data['status_only_changed']})",
+        [c for c in data["changes"] if not c["verdict_changed"]],
+    )
+    crit = [c for c in data["changes"] if c["severity"] == "critical" and c["verdict_changed"]]
     lines += [
         "",
         f"## Critical (safety) changes ({len(crit)}) — review each",

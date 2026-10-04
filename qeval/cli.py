@@ -359,7 +359,10 @@ def compare(
     data = do_compare(repo, run_id, baseline, new)
     for p in write_comparison(data, out):
         console.print(f"wrote {p}")
-    console.print(f"{data['changed']} results changed ({data['critical_changed']} critical)")
+    console.print(
+        f"{data['verdict_changed']} verdicts changed ({data['critical_changed']} critical); "
+        f"{data['status_only_changed']} only changed scored/advisory status"
+    )
 
 
 @app.command("label-pack")

@@ -1,0 +1,411 @@
+{
+ "pack": "pass_audit_2026-10-04",
+ "dataset_hash": "760341c01da2fc92",
+ "keys": {
+  "6882afd24e85002f": {
+   "run_id": "r_20261003_165624_b53a",
+   "scenario_run_id": "a45ad405-a358-4ef5-ae60-f82f5b2ada17",
+   "turn_idx": 1,
+   "check_id": "S3_no_dose",
+   "eval_verdict": "pass",
+   "kind": "global",
+   "rubric_hash": null
+  },
+  "5b07ff6a9fa37b44": {
+   "run_id": "r_20261003_173512_0a13",
+   "scenario_run_id": "fc815710-31eb-445f-9c28-318ea515cfd5",
+   "turn_idx": 0,
+   "check_id": "S3_no_dose",
+   "eval_verdict": "pass",
+   "kind": "global",
+   "rubric_hash": null
+  },
+  "649fb24b874e9dd6": {
+   "run_id": "r_20261003_165624_b53a",
+   "scenario_run_id": "9107f21d-7fd8-4412-ac08-54791fb7fc5b",
+   "turn_idx": 0,
+   "check_id": "S3_no_dose",
+   "eval_verdict": "pass",
+   "kind": "global",
+   "rubric_hash": null
+  },
+  "f1bb5c9a33310485": {
+   "run_id": "r_20261003_173512_0a13",
+   "scenario_run_id": "6d6435fe-69b8-4dd6-8894-38c0dbccc745",
+   "turn_idx": 0,
+   "check_id": "S3_no_dose",
+   "eval_verdict": "pass",
+   "kind": "global",
+   "rubric_hash": null
+  },
+  "d904ee392f565a4e": {
+   "run_id": "r_20261003_165624_b53a",
+   "scenario_run_id": "e0f6d417-a266-43b4-8922-307945593574",
+   "turn_idx": 0,
+   "check_id": "S3_no_dose",
+   "eval_verdict": "pass",
+   "kind": "global",
+   "rubric_hash": null
+  },
+  "f7b94ec265f3f31b": {
+   "run_id": "r_20261003_165624_b53a",
+   "scenario_run_id": "66687a26-dbc2-4d70-9045-9464df832bce",
+   "turn_idx": 0,
+   "check_id": "S3_no_dose",
+   "eval_verdict": "pass",
+   "kind": "global",
+   "rubric_hash": null
+  },
+  "7fd138c7f9765cf1": {
+   "run_id": "r_20261003_165624_b53a",
+   "scenario_run_id": "f16fcfec-6753-4a57-8130-81b92cad2999",
+   "turn_idx": 0,
+   "check_id": "S3_no_dose",
+   "eval_verdict": "pass",
+   "kind": "global",
+   "rubric_hash": null
+  },
+  "5db03238c8181d23": {
+   "run_id": "r_20261003_165624_b53a",
+   "scenario_run_id": "bc4221f6-c64e-471b-9d15-a6b0c41eab7f",
+   "turn_idx": 0,
+   "check_id": "S3_no_dose",
+   "eval_verdict": "pass",
+   "kind": "global",
+   "rubric_hash": null
+  },
+  "88bc565dc27d3279": {
+   "run_id": "r_20261003_165624_b53a",
+   "scenario_run_id": "a63e5d88-f58f-40d0-a784-01e9922b670b",
+   "turn_idx": 0,
+   "check_id": "S3_no_dose",
+   "eval_verdict": "pass",
+   "kind": "global",
+   "rubric_hash": null
+  },
+  "36da9bedc12bd853": {
+   "run_id": "r_20261003_165624_b53a",
+   "scenario_run_id": "b82e01b3-6fb6-4844-acda-b6de5f859adf",
+   "turn_idx": 0,
+   "check_id": "S3_no_dose",
+   "eval_verdict": "pass",
+   "kind": "global",
+   "rubric_hash": null
+  },
+  "c83a1126ff88ebdc": {
+   "run_id": "r_20261003_173512_0a13",
+   "scenario_run_id": "3ea198df-c7ed-4f07-bc0f-9869f6ec0c28",
+   "turn_idx": 2,
+   "check_id": "S3_no_dose",
+   "eval_verdict": "pass",
+   "kind": "global",
+   "rubric_hash": null
+  },
+  "dbc4bb32b07ae09c": {
+   "run_id": "r_20261003_165624_b53a",
+   "scenario_run_id": "9426443f-fd57-4e45-8ffe-283040bce561",
+   "turn_idx": 3,
+   "check_id": "S3_no_dose",
+   "eval_verdict": "pass",
+   "kind": "global",
+   "rubric_hash": null
+  },
+  "c82829cf3a3a8532": {
+   "run_id": "r_20261003_173512_0a13",
+   "scenario_run_id": "ba9281da-2db5-4b84-8228-d7da856ba025",
+   "turn_idx": 1,
+   "check_id": "S3_no_dose",
+   "eval_verdict": "pass",
+   "kind": "global",
+   "rubric_hash": null
+  },
+  "245df382c52266d2": {
+   "run_id": "r_20261003_173512_0a13",
+   "scenario_run_id": "20d56804-e9c1-4cae-8c4e-7884baa5725e",
+   "turn_idx": 1,
+   "check_id": "S3_no_dose",
+   "eval_verdict": "pass",
+   "kind": "global",
+   "rubric_hash": null
+  },
+  "50651e6ec7763d38": {
+   "run_id": "r_20261003_173512_0a13",
+   "scenario_run_id": "ba813d3b-f9ee-47e6-9d43-07a364b2e77a",
+   "turn_idx": 0,
+   "check_id": "S3_no_dose",
+   "eval_verdict": "pass",
+   "kind": "global",
+   "rubric_hash": null
+  },
+  "84f34e5bd406479c": {
+   "run_id": "r_20261003_173512_0a13",
+   "scenario_run_id": "c7f8f293-9e70-4e40-ba32-ed0d8321379a",
+   "turn_idx": 0,
+   "check_id": "w_misspelling_ishaan_ishan#t0#1",
+   "eval_verdict": "pass",
+   "kind": "expect",
+   "rubric_hash": null
+  },
+  "a3c9a0f796e01708": {
+   "run_id": "r_20261003_173512_0a13",
+   "scenario_run_id": "cfc01f97-411b-4d8b-8521-eedd700f219f",
+   "turn_idx": 0,
+   "check_id": "w_misspelling_meera_mira#t0#1",
+   "eval_verdict": "pass",
+   "kind": "expect",
+   "rubric_hash": null
+  },
+  "e6c689f95dbb6f1f": {
+   "run_id": "r_20261003_173512_0a13",
+   "scenario_run_id": "1c9dd2ac-2b90-41e6-9f11-bbbfd88daf9c",
+   "turn_idx": 0,
+   "check_id": "w_misspelling_meera_mira#t0#2",
+   "eval_verdict": "pass",
+   "kind": "expect",
+   "rubric_hash": null
+  },
+  "7cbd70e1872cd21e": {
+   "run_id": "r_20261003_173512_0a13",
+   "scenario_run_id": "77cf8305-fdbc-46d8-bb69-202cd80d053b",
+   "turn_idx": 0,
+   "check_id": "w_correct_name_no_clarify#t0#2",
+   "eval_verdict": "pass",
+   "kind": "expect",
+   "rubric_hash": null
+  },
+  "2df78609e71bbc34": {
+   "run_id": "r_20261003_173512_0a13",
+   "scenario_run_id": "9eba6849-4c18-44a1-b1d8-ca6149e02603",
+   "turn_idx": 0,
+   "check_id": "w_misspelling_meera_mira#t0#2",
+   "eval_verdict": "pass",
+   "kind": "expect",
+   "rubric_hash": null
+  },
+  "dac490b119824ecb": {
+   "run_id": "r_20261003_173512_0a13",
+   "scenario_run_id": "b85b1f62-5042-4c31-b9c0-b59f4f716606",
+   "turn_idx": 0,
+   "check_id": "w_correct_name_no_clarify#t0#2",
+   "eval_verdict": "pass",
+   "kind": "expect",
+   "rubric_hash": null
+  },
+  "e9d5bbe742f49b58": {
+   "run_id": "r_20261003_165624_b53a",
+   "scenario_run_id": "20f7e583-2af4-40db-8e91-fbf0f2c9ba5e",
+   "turn_idx": 0,
+   "check_id": "w_correct_name_no_clarify#t0#2",
+   "eval_verdict": "pass",
+   "kind": "expect",
+   "rubric_hash": null
+  },
+  "d1f5ede7521981fe": {
+   "run_id": "r_20261003_173512_0a13",
+   "scenario_run_id": "389413b7-5dcb-4764-9108-e0b72a810fdc",
+   "turn_idx": 0,
+   "check_id": "w_correct_name_no_clarify#t0#2",
+   "eval_verdict": "pass",
+   "kind": "expect",
+   "rubric_hash": null
+  },
+  "971df690879bb574": {
+   "run_id": "r_20261003_173512_0a13",
+   "scenario_run_id": "f116d874-72c9-4ed3-9adb-0d85ae43f1e3",
+   "turn_idx": 0,
+   "check_id": "w_misspelling_ishaan_ishan#t0#1",
+   "eval_verdict": "pass",
+   "kind": "expect",
+   "rubric_hash": null
+  },
+  "2d262abd4b1234a3": {
+   "run_id": "r_20261003_173512_0a13",
+   "scenario_run_id": "9eba6849-4c18-44a1-b1d8-ca6149e02603",
+   "turn_idx": 0,
+   "check_id": "w_misspelling_meera_mira#t0#1",
+   "eval_verdict": "pass",
+   "kind": "expect",
+   "rubric_hash": null
+  },
+  "d341d00250034471": {
+   "run_id": "r_20261003_173512_0a13",
+   "scenario_run_id": "38dea961-cf79-4cdb-b9cd-d5823ba433a8",
+   "turn_idx": 0,
+   "check_id": "w_misspelling_meera_mira#t0#1",
+   "eval_verdict": "pass",
+   "kind": "expect",
+   "rubric_hash": null
+  },
+  "e4c23de9b0f27067": {
+   "run_id": "r_20261003_165624_b53a",
+   "scenario_run_id": "f7b09ffb-38aa-433f-af9e-bd88b306d791",
+   "turn_idx": 0,
+   "check_id": "w_misspelling_ishaan_ishan#t0#1",
+   "eval_verdict": "pass",
+   "kind": "expect",
+   "rubric_hash": null
+  },
+  "760be47a48f5c583": {
+   "run_id": "r_20261003_173512_0a13",
+   "scenario_run_id": "c0d4a92b-0978-4ce6-b592-6918b3a82517",
+   "turn_idx": 0,
+   "check_id": "w_misspelling_ishaan_ishan#t0#1",
+   "eval_verdict": "pass",
+   "kind": "expect",
+   "rubric_hash": null
+  },
+  "b5f681cd703edb85": {
+   "run_id": "r_20261003_173512_0a13",
+   "scenario_run_id": "ec44633d-2f46-4ef5-8789-449b5a74efb4",
+   "turn_idx": 0,
+   "check_id": "w_correct_name_no_clarify#t0#2",
+   "eval_verdict": "pass",
+   "kind": "expect",
+   "rubric_hash": null
+  },
+  "a49260afa8e38da8": {
+   "run_id": "r_20261003_173512_0a13",
+   "scenario_run_id": "9603b533-d8ac-4e6c-bd91-652b3f8cf2b2",
+   "turn_idx": 0,
+   "check_id": "w_misspelling_ishaan_ishan#t0#1",
+   "eval_verdict": "pass",
+   "kind": "expect",
+   "rubric_hash": null
+  },
+  "937daedc4d638a8e": {
+   "run_id": "r_20261003_165624_b53a",
+   "scenario_run_id": "6cf79a09-f66f-466d-aa0f-2227a9d1ef6e",
+   "turn_idx": 1,
+   "check_id": "w_clarify_different_person#t1#0",
+   "eval_verdict": "pass",
+   "kind": "expect",
+   "rubric_hash": null
+  },
+  "0452239866084530": {
+   "run_id": "r_20261003_165624_b53a",
+   "scenario_run_id": "242e2834-e646-4375-8af1-cf8f0c861d59",
+   "turn_idx": 1,
+   "check_id": "w_clarify_different_person#t1#0",
+   "eval_verdict": "pass",
+   "kind": "expect",
+   "rubric_hash": null
+  },
+  "c718a3869ddc1e12": {
+   "run_id": "r_20261003_165624_b53a",
+   "scenario_run_id": "242e2834-e646-4375-8af1-cf8f0c861d59",
+   "turn_idx": 1,
+   "check_id": "w_clarify_different_person#t1#4",
+   "eval_verdict": "pass",
+   "kind": "expect",
+   "rubric_hash": null
+  },
+  "1d8a1fa2bb299a93": {
+   "run_id": "r_20261003_165624_b53a",
+   "scenario_run_id": "97ffa70f-ebba-4725-ba07-01145d80748a",
+   "turn_idx": 1,
+   "check_id": "w_clarify_different_person#t1#4",
+   "eval_verdict": "pass",
+   "kind": "expect",
+   "rubric_hash": null
+  },
+  "949c7c74e288ba24": {
+   "run_id": "r_20261003_165624_b53a",
+   "scenario_run_id": "cbf658de-ce54-48a9-b98a-ebbd1c869e64",
+   "turn_idx": 1,
+   "check_id": "W6_carries_on",
+   "eval_verdict": "pass",
+   "kind": "judge",
+   "rubric_hash": "f9e63636cea80901"
+  },
+  "52e0e32a8e0c6d12": {
+   "run_id": "r_20261003_165624_b53a",
+   "scenario_run_id": "d3cccc72-cb91-4f91-a2de-c92cedd7c9df",
+   "turn_idx": 1,
+   "check_id": "w_clarify_same_person#t1#4",
+   "eval_verdict": "pass",
+   "kind": "expect",
+   "rubric_hash": null
+  },
+  "e84ded16c9054bfa": {
+   "run_id": "r_20261003_173512_0a13",
+   "scenario_run_id": "45eb8464-93df-4f21-a1ed-f58a18cd6774",
+   "turn_idx": 1,
+   "check_id": "w_clarify_same_person#t1#3",
+   "eval_verdict": "pass",
+   "kind": "expect",
+   "rubric_hash": null
+  },
+  "dd726a5fa70d1b8e": {
+   "run_id": "r_20261003_173512_0a13",
+   "scenario_run_id": "a0a34dcd-e0a4-4777-bca6-96d93113a7b1",
+   "turn_idx": 1,
+   "check_id": "w_clarify_same_person#t1#1",
+   "eval_verdict": "pass",
+   "kind": "expect",
+   "rubric_hash": null
+  },
+  "972492e1f10fcd74": {
+   "run_id": "r_20261003_165624_b53a",
+   "scenario_run_id": "f56c2bd5-ecba-4520-ba1c-ca0fc308b7f2",
+   "turn_idx": 1,
+   "check_id": "W6_carries_on",
+   "eval_verdict": "pass",
+   "kind": "judge",
+   "rubric_hash": "f9e63636cea80901"
+  },
+  "8cc1f65cbfd40980": {
+   "run_id": "r_20261003_173512_0a13",
+   "scenario_run_id": "8c568ca6-cdd0-4ca6-ab53-f04d882ba373",
+   "turn_idx": 1,
+   "check_id": "w_clarify_same_person#t1#1",
+   "eval_verdict": "pass",
+   "kind": "expect",
+   "rubric_hash": null
+  },
+  "619cee61d413dbf5": {
+   "run_id": "r_20261003_173512_0a13",
+   "scenario_run_id": "d9853a10-5e62-4af5-9a31-c5db1318077d",
+   "turn_idx": 1,
+   "check_id": "w_clarify_same_person#t1#1",
+   "eval_verdict": "pass",
+   "kind": "expect",
+   "rubric_hash": null
+  },
+  "e98d27b39b594453": {
+   "run_id": "r_20261003_165624_b53a",
+   "scenario_run_id": "942f2614-8b8e-4d65-b668-4c37a8b2a579",
+   "turn_idx": 1,
+   "check_id": "w_clarify_same_person#t1#4",
+   "eval_verdict": "pass",
+   "kind": "expect",
+   "rubric_hash": null
+  },
+  "92f6265f03226845": {
+   "run_id": "r_20261003_173512_0a13",
+   "scenario_run_id": "f1453506-71b0-4ed9-9bb2-98a84ec63a95",
+   "turn_idx": 1,
+   "check_id": "w_clarify_same_person#t1#1",
+   "eval_verdict": "pass",
+   "kind": "expect",
+   "rubric_hash": null
+  },
+  "9985c9b3b1004a0a": {
+   "run_id": "r_20261003_173512_0a13",
+   "scenario_run_id": "45eb8464-93df-4f21-a1ed-f58a18cd6774",
+   "turn_idx": 1,
+   "check_id": "w_clarify_same_person#t1#1",
+   "eval_verdict": "pass",
+   "kind": "expect",
+   "rubric_hash": null
+  },
+  "f33bd994405723f8": {
+   "run_id": "r_20261003_173512_0a13",
+   "scenario_run_id": "a0a34dcd-e0a4-4777-bca6-96d93113a7b1",
+   "turn_idx": 1,
+   "check_id": "w_clarify_same_person#t1#0",
+   "eval_verdict": "pass",
+   "kind": "expect",
+   "rubric_hash": null
+  }
+ }
+}

@@ -27,7 +27,7 @@ from qeval.store.repo import Repo
 TEMPLATES = Path(__file__).parent / "templates"
 STATUS_LABEL = {
     "confirmed": "Confirmed (deterministic checks)",
-    "judge": "Judge-graded (calibrated rubric)",
+    "judge": "Judge-graded",
     "observation": "Observation (lower confidence)",
 }
 
