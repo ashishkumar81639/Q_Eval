@@ -343,7 +343,7 @@ def eval_cmd(
     name: Annotated[str | None, typer.Option()] = None,
     no_judge: Annotated[bool, typer.Option("--no-judge")] = False,
 ) -> None:
-    """Run, grade, report, dump and export; exits with the CI gate code."""
+    """Run, grade, report, findings, dump and export in one command; exits with the CI gate code."""
     from qeval.grading.grade import grade as do_grade
     from qeval.report.build import build_report
     from qeval.store.export import export_run
@@ -358,9 +358,15 @@ def eval_cmd(
     repo = _repo(s)
     gid = asyncio.run(do_grade(repo, run_id, s, judge=not no_judge))
     out, code = build_report(repo, run_id, gid)
+    from qeval.report.findings import build_findings, write_findings
+
+    write_findings(build_findings(repo, [run_id]), out)
     exp = export_run(repo, run_id, s.runs_dir / run_id / "export.jsonl.gz")
     _auto_dump(s, run_id)
-    console.print(f"report: {out / 'report.html'}\nexport: {exp}\ngate exit code {code}")
+    console.print(
+        f"report: {out / 'report.html'}\nfindings: {out / 'FINDINGS.md'}\nexport: {exp}\n"
+        f"gate exit code {code}"
+    )
     raise typer.Exit(code)
 
 

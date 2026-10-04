@@ -48,7 +48,7 @@ class FindingDef(BaseModel):
     scenarios: list[str]
     twins: list[str] = []
     breakdown: Breakdown | None = None
-    cause: str = ""
+    cause: str = ""  # one line: the reviewer's hypothesis for the likely cause
 
 
 class FindingsFile(BaseModel):
@@ -158,7 +158,35 @@ class RunData:
         ]
 
 
-def _example(rd: RunData, sr_id: str, rules: list[str], rubrics: dict, current: dict) -> dict | None:
+MAX_EXAMPLES = 6
+MAX_TWIN_EXAMPLES = 3
+
+
+def _turn_evidence(rd: RunData, sr: dict, turn: dict | None) -> dict:
+    """What happened on one turn, in plain fields (no ids needed to read it)."""
+    names = rd.names(sr)
+    ts = rd.turns.get(sr["id"], [])
+    resp = (turn or {}).get("response") or {}
+    reply = resp.get("respond") or {}
+    earlier = [t for t in ts if turn is not None and t["idx"] < turn["idx"]][-3:]
+    tools = [e.get("tool") for e in resp.get("trace") or [] if e.get("type") == "tool_call"]
+    return {
+        "scenario": sr["scenario_id"],
+        "rep": sr["rep"],
+        "scenario_run_id": sr["id"],
+        "turn_idx": (turn or {}).get("idx"),
+        "earlier_user_messages": [t.get("sent_text", "") for t in earlier],
+        "user": (turn or {}).get("sent_text", ""),
+        "reply_kind": reply.get("kind"),
+        "urgency": reply.get("urgency"),
+        "escalate_to_doctor": reply.get("escalate_to_doctor"),
+        "about": [names.get(x, x) for x in reply.get("subject_ids") or []],
+        "reply": " ".join((reply.get("message") or "").split())[:1500],
+        "tools": tools,
+    }
+
+
+def _failing_example(rd: RunData, sr_id: str, rules: list[str], rubrics: dict, current: dict) -> dict | None:
     rows = rd.failing_rows(sr_id, rules)
     if not rows:
         return None
@@ -171,24 +199,55 @@ def _example(rd: RunData, sr_id: str, rules: list[str], rubrics: dict, current: 
     row = dict(rows[0])
     sr = rd.sr_by_id[sr_id]
     d = describe(row, rubrics, sr.get("scenario_snapshot"), rd.names(sr), current=current)
-    turn = None
     ts = rd.turns.get(sr_id, [])
-    if row["turn_idx"] is not None:
-        turn = next((t for t in ts if t["idx"] == row["turn_idx"]), None)
-    elif ts:
-        turn = ts[-1]
-    reply = ((turn or {}).get("response") or {}).get("respond") or {}
-    return {
-        "scenario": sr["scenario_id"],
-        "rep": sr["rep"],
-        "scenario_run_id": sr_id,
-        "check": d.check_title,
-        "got": d.got,
-        "user": (turn or {}).get("sent_text", ""),
-        "reply_kind": reply.get("kind"),
-        "reply": " ".join((reply.get("message") or "").split())[:420],
-        "turn_idx": row["turn_idx"],
-    }
+    turn = next((t for t in ts if t["idx"] == row["turn_idx"]), None) if row["turn_idx"] is not None else None
+    turn = turn or (ts[-1] if ts else None)
+    return {**_turn_evidence(rd, sr, turn), "check": d.check_title, "got": d.got, "run": rd.name}
+
+
+def _passing_example(rd: RunData, sr: dict, rules: list[str]) -> dict | None:
+    if rd.failing_rows(sr["id"], rules):
+        return None
+    ts = rd.turns.get(sr["id"], [])
+    if not ts:
+        return None
+    return {**_turn_evidence(rd, sr, ts[0]), "run": rd.name}
+
+
+def collect_examples(runs: list[RunData], f: FindingDef, rubrics: dict, current: dict) -> tuple[list, list]:
+    """Failing examples (E1..), one per scenario first, latest run preferred; passing twins (T1..)."""
+    examples: list[dict] = []
+    for sid in f.scenarios:
+        for rd in reversed(runs):
+            ex = next(
+                (
+                    e
+                    for sr in rd.by_scenario.get(sid, [])
+                    if (e := _failing_example(rd, sr["id"], f.rules, rubrics, current))
+                ),
+                None,
+            )
+            if ex:
+                examples.append(ex)
+                break
+        if len(examples) >= MAX_EXAMPLES:
+            break
+    twins: list[dict] = []
+    for sid in f.twins:
+        for rd in reversed(runs):
+            ex = next(
+                (e for sr in rd.by_scenario.get(sid, []) if (e := _passing_example(rd, sr, f.rules))), None
+            )
+            if ex:
+                twins.append(ex)
+                break
+        if len(twins) >= MAX_TWIN_EXAMPLES:
+            break
+    for i, e in enumerate(examples, 1):
+        e["id"] = f"E{i}"
+    for i, e in enumerate(twins, 1):
+        e["id"] = f"T{i}"
+    return examples, twins
 
 
 def build_findings(repo: Repo, run_ids: list[str], findings_path: Path | None = None) -> dict:
@@ -218,18 +277,9 @@ def build_findings(repo: Repo, run_ids: list[str], findings_path: Path | None = 
         for sid in f.twins:
             cells = [rd.scenario_rate(sid, f.rules) for rd in runs]
             twins.append({"id": sid, "title": titles.get(sid, sid), "runs": cells})
-        example = None
-        for rd in reversed(runs):  # prefer the latest run listed
-            for sid in f.scenarios:
-                for sr in rd.by_scenario.get(sid, []):
-                    example = _example(rd, sr["id"], f.rules, rubrics, current)
-                    if example:
-                        example["run"] = rd.name
-                        break
-                if example:
-                    break
-            if example:
-                break
+        examples, twin_examples = collect_examples(runs, f, rubrics, current)
+        for e in examples + twin_examples:
+            e["scenario_title"] = titles.get(e["scenario"], e["scenario"])
         breakdown = None
         if f.breakdown:
             merged: dict[str, Counter] = defaultdict(Counter)
@@ -275,7 +325,9 @@ def build_findings(repo: Repo, run_ids: list[str], findings_path: Path | None = 
                 ),
                 "scenarios": per_scenario,
                 "twins": twins,
-                "example": example,
+                "example": examples[0] if examples else None,
+                "examples": examples,
+                "twin_examples": twin_examples,
                 "breakdown": breakdown,
                 "headline": best,
                 "cause": f.cause,

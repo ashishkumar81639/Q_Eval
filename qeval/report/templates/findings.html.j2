@@ -63,6 +63,19 @@ tr.twin td:first-child { color: var(--muted); }
 .ex { background: var(--accent-soft); border-radius: 8px; padding: 10px 12px; display: flex; flex-direction: column; gap: 4px; font-size: 14px; }
 .ex .lbl { font: 500 11.5px var(--f-mono); text-transform: uppercase; letter-spacing: .05em; color: var(--muted); }
 .cause { font-size: 14px; }
+.an { border: 1px solid var(--line); border-radius: 8px; padding: 10px 12px; display: flex; flex-direction: column; gap: 6px; font-size: 14px; }
+.an p { max-width: none; }
+.an .lbl, .ex .lbl { font: 500 11.5px var(--f-mono); text-transform: uppercase; letter-spacing: .05em; color: var(--muted); }
+.warn { color: var(--crit); }
+.kv { display: grid; grid-template-columns: 8.5em 1fr; gap: 3px 12px; margin: 0; }
+.kv dt { color: var(--muted); }
+.kv dd { margin: 0; min-width: 0; }
+details.evid { display: flex; flex-direction: column; gap: 8px; }
+details.evid > summary { margin-bottom: 8px; }
+details.evid .ex + .ex { margin-top: 8px; }
+.ex.twin { background: var(--bg); border: 1px dashed var(--line); }
+.small { font-size: 13px; }
+@media (max-width: 520px) { .kv { grid-template-columns: 1fr; } }
 details summary { cursor: pointer; color: var(--muted); font-size: 13px; }
 code { font-family: var(--f-mono); font-size: .9em; }
 </style>
@@ -108,15 +121,26 @@ code { font-family: var(--f-mono); font-size: .9em; }
     <tbody>{% for b in f.breakdown.rows %}<tr><td><code>{{ b.group }}</code></td><td>{% for k, v in b.counts.items() %}<code>{{ k }}</code> × {{ v }}{% if not loop.last %}, {% endif %}{% endfor %}</td><td class="num">{{ b.total }}</td></tr>{% endfor %}</tbody>
   </table></div>
   {% endif %}
-  {% if f.example %}
-  <div class="ex">
-    <span class="lbl">Example · {{ f.example.run }} · {{ f.example.scenario }} rep {{ f.example.rep }}{% if f.example.turn_idx is not none %} · turn {{ f.example.turn_idx }}{% endif %}</span>
-    <div><b>User:</b> “{{ f.example.user }}”</div>
-    <div><b>Q ({{ f.example.reply_kind }}):</b> “{{ f.example.reply }}”</div>
-    <div><b>{{ f.example.check }}:</b> {{ f.example.got }}</div>
-  </div>
+  {% if f.cause %}<p class="cause"><b>Likely cause (hypothesis):</b> {{ f.cause }}</p>{% endif %}
+  {% if f.examples %}
+  <details class="evid"><summary>Evidence: {{ f.examples|length }} failing example{{ 's' if f.examples|length != 1 }}{% if f.twin_examples %}, {{ f.twin_examples|length }} passing twin{{ 's' if f.twin_examples|length != 1 }}{% endif %}</summary>
+    {% for e in f.examples %}
+    <div class="ex">
+      <span class="lbl">{{ e.id }} · {{ e.scenario_title }} · {{ e.run }} rep {{ e.rep }}{% if e.turn_idx is not none %} · turn {{ e.turn_idx }}{% endif %}</span>
+      <div><b>User:</b> “{{ e.user }}”</div>
+      <div><b>Q ({{ e.reply_kind }}{% if e.urgency %}, {{ e.urgency }}{% endif %}):</b> “{{ e.reply[:500] }}{% if e.reply|length > 500 %}…{% endif %}”</div>
+      <div><b>{{ e.check }}:</b> {{ e.got }}</div>
+    </div>
+    {% endfor %}
+    {% for e in f.twin_examples %}
+    <div class="ex twin">
+      <span class="lbl">{{ e.id }} · passing twin · {{ e.scenario_title }}</span>
+      <div><b>User:</b> “{{ e.user }}”</div>
+      <div><b>Q ({{ e.reply_kind }}{% if e.urgency %}, {{ e.urgency }}{% endif %}):</b> “{{ e.reply[:300] }}{% if e.reply|length > 300 %}…{% endif %}”</div>
+    </div>
+    {% endfor %}
+  </details>
   {% endif %}
-  <p class="cause"><b>Likely cause:</b> {{ f.cause }}</p>
 </article>
 {% endfor %}
 

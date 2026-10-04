@@ -30,6 +30,7 @@ uv run qeval run scenarios/ --k 5     # run step only (calls the agent); prints 
 uv run qeval grade <run_id>           # grade step only (never calls the agent); add --no-judge for free/fast
 uv run qeval report <run_id> --gate   # runs/<run_id>/report/{report.html,results.json,junit.xml}
 uv run qeval findings <run_id> [<run_id> ...]   # results/{FINDINGS.md,findings.html,findings.json} from findings.yaml
+# `qeval eval` runs everything above (run, grade, report, findings, export) in one command
 uv run qeval show <run_id> <scenario_id> --rep 2   # transcript, trace, state changes and failing checks
 uv run qeval coverage                 # rule -> scenarios / checks / rubrics
 uv run qeval export <run_id>          # portable export; `qeval import` re-grades it on SQLite, no Docker
