@@ -63,6 +63,7 @@ tr.twin td:first-child { color: var(--muted); }
 .ex { background: var(--accent-soft); border-radius: 8px; padding: 10px 12px; display: flex; flex-direction: column; gap: 4px; font-size: 14px; }
 .ex .lbl { font: 500 11.5px var(--f-mono); text-transform: uppercase; letter-spacing: .05em; color: var(--muted); }
 .cause { font-size: 14px; }
+.card.advisory { border-left-style: dashed; }
 .an { border: 1px solid var(--line); border-radius: 8px; padding: 10px 12px; display: flex; flex-direction: column; gap: 6px; font-size: 14px; }
 .an p { max-width: none; }
 .an .lbl, .ex .lbl { font: 500 11.5px var(--f-mono); text-transform: uppercase; letter-spacing: .05em; color: var(--muted); }
@@ -98,11 +99,18 @@ code { font-family: var(--f-mono); font-size: .9em; }
 {% endmacro %}
 
 {% for f in d.findings %}
-<article class="card {{ f.severity }}" id="{{ f.id }}">
+{% if f.advisory and (loop.first or not loop.previtem.advisory) %}
+<section style="display:flex;flex-direction:column;gap:6px">
+  <h2 style="flex:none">Advisory findings (not counted)</h2>
+  <p class="muted">These rest only on LLM-judge checks that have not yet passed blind human calibration. Their numbers are shown for review but are not part of any score, finding frequency or CI gate.</p>
+</section>
+{% endif %}
+<article class="card {{ f.severity }}{% if f.advisory %} advisory{% endif %}" id="{{ f.id }}">
   <div class="head">
     <h2>{{ loop.index }}. {{ f.title }}</h2>
     <span class="pill {{ f.severity }}">{{ f.severity }}</span>
     <span class="pill st">{{ f.status_label }}</span>
+    {% if f.advisory %}<span class="pill minor">advisory · not counted</span>{% endif %}
   </div>
   {% if f.headline %}<div class="headline">{{ f.headline.fails }}/{{ f.headline.n }} runs failed in {{ f.headline.run }} [{{ f.headline.ci[0]|pct }}–{{ f.headline.ci[1]|pct }}]</div>{% endif %}
   <div class="rules">

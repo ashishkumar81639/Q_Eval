@@ -26,24 +26,62 @@ def _fact_ev(f: dict) -> dict:
     return {k: f.get(k) for k in ("id", "subject_id", "episode_id", "category", "key", "value")}
 
 
+# Every field of the structured reply the user receives (the top-level `respond` object).
+REPLY_FIELDS = (
+    "kind",
+    "message",
+    "subject_ids",
+    "episode_id",
+    "urgency",
+    "escalate_to_doctor",
+    "possible_causes",
+    "explanation",
+    "red_flags",
+    "missing_info",
+    "options",
+)
+
+
 @check(
-    id="R1_single_final_respond",
-    title="Turn ends with exactly one respond call",
+    id="R1_valid_reply",
+    title="Turn ends with one valid reply",
     failure="{message}",
     rule="R1",
 )
 def r1(t: NormTurn, run: NormRun) -> Verdict:
+    """User-visible: the returned reply has one valid kind and the full structured shape (spec R1)."""
+    r = t.reply
+    problems = []
+    if not isinstance(r, dict) or not r:
+        problems.append("no reply returned")
+    else:
+        if r.get("kind") not in KINDS:
+            problems.append(f"invalid kind {r.get('kind')!r}")
+        missing = [f for f in REPLY_FIELDS if f not in r]
+        if missing:
+            problems.append(f"reply is missing fields: {', '.join(missing)}")
+        if not (r.get("message") or "").strip():
+            problems.append("empty message")
+    return Verdict("fail" if problems else "pass", {"kind": (r or {}).get("kind")}, "; ".join(problems))
+
+
+@check(
+    id="TRACE_respond_protocol",
+    title="Agent ended the turn with exactly one final respond tool call (internal, not scored)",
+    failure="{message}",
+    rule="R1",
+    scored=False,
+)
+def trace_respond_protocol(t: NormTurn, run: NormRun) -> Verdict:
+    """Internal protocol health: a missing, duplicated or non-final `respond` call. Shown, never counted."""
     ok = [c for c in t.trace.respond_calls if not c.is_error]
     non_err = [c for c in t.trace.calls if not c.is_error]
-    ev = {"tools": t.trace.tools, "respond_calls": len(ok), "kind": t.reply.get("kind")}
-    problems = []
+    ev = {"tools": t.trace.tools, "respond_calls": len(ok)}
     if len(ok) != 1:
-        problems.append(f"{len(ok)} successful respond calls")
-    elif non_err and non_err[-1] is not ok[0]:
-        problems.append(f"respond is not the last tool call (last: {non_err[-1].tool})")
-    if t.reply.get("kind") not in KINDS:
-        problems.append(f"invalid kind {t.reply.get('kind')!r}")
-    return Verdict("fail" if problems else "pass", ev, "; ".join(problems))
+        return Verdict("fail", ev, f"{len(ok)} respond tool calls (the platform still returned a reply)")
+    if non_err and non_err[-1] is not ok[0]:
+        return Verdict("fail", ev, f"respond is not the last tool call (last: {non_err[-1].tool})")
+    return Verdict("pass", ev)
 
 
 @check(
@@ -320,10 +358,11 @@ def tm1_relative(t: NormTurn, run: NormRun) -> Verdict:
 
 @check(
     id="TM1_duration_without_date",
-    title="Durations saved with an anchoring date",
+    title="Durations saved with an anchoring date (advisory)",
     failure="Duration saved without a date: {facts}",
     rule="TM1",
     severity="minor",
+    scored=False,  # strict reading of TM1; shown, not counted (plan issue 8). TM1_relative stays scored.
 )
 def tm1_duration(t: NormTurn, run: NormRun) -> Verdict:
     facts = _facts_this_turn(t)

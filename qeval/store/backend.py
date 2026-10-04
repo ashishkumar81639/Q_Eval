@@ -16,12 +16,17 @@ class SchemaMismatch(RuntimeError):
 
 
 # Older schema version -> statements that bring it to SCHEMA_VERSION (portable SQL only).
-MIGRATIONS: dict[str, list[str]] = {
-    "1": [
-        "ALTER TABLE scenario_runs ADD COLUMN scenario_snapshot JSON",
-        "ALTER TABLE gradings ADD COLUMN status TEXT",
-        "ALTER TABLE gradings ADD COLUMN finished_at TEXT",
-    ],
+# Schema version -> (next version, statements), applied in a chain up to SCHEMA_VERSION. Portable SQL only.
+MIGRATIONS: dict[str, tuple[str, list[str]]] = {
+    "1": (
+        "2",
+        [
+            "ALTER TABLE scenario_runs ADD COLUMN scenario_snapshot JSON",
+            "ALTER TABLE gradings ADD COLUMN status TEXT",
+            "ALTER TABLE gradings ADD COLUMN finished_at TEXT",
+        ],
+    ),
+    "2": ("3", ["ALTER TABLE check_results ADD COLUMN scored BOOLEAN"]),
 }
 
 
@@ -53,8 +58,13 @@ def init_schema(engine: Engine) -> None:
         if row is None:
             c.execute(meta.insert().values(key="schema_version", value=SCHEMA_VERSION))
         elif row[0] in MIGRATIONS:
-            for stmt in MIGRATIONS[row[0]]:
-                c.exec_driver_sql(stmt)
+            version = row[0]
+            while version != SCHEMA_VERSION:
+                if version not in MIGRATIONS:
+                    raise SchemaMismatch(f"no migration from schema {version} to {SCHEMA_VERSION}")
+                version, stmts = MIGRATIONS[version]
+                for stmt in stmts:
+                    c.exec_driver_sql(stmt)
             c.execute(meta.update().where(meta.c.key == "schema_version").values(value=SCHEMA_VERSION))
         elif row[0] != SCHEMA_VERSION:
             raise SchemaMismatch(f"database schema {row[0]} != harness schema {SCHEMA_VERSION}")

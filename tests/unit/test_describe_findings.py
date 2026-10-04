@@ -102,7 +102,7 @@ def test_judge_row_uses_rubric_title_and_reason():
         "evidence": {"quote": "Kamala needs urgent medical attention."},
     }
     d = describe(row, load_rubrics())
-    assert d.check_title == "Emergency instruction in the first two sentences"
+    assert d.check_title == "Emergency instruction comes first"
     assert "Advice comes later." in d.got and "Kamala" in d.got
 
 

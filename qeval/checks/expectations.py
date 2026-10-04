@@ -23,6 +23,7 @@ class CheckRow:
     evidence: dict | None = None
     message: str = ""
     scenario_run_id: str = ""
+    scored: bool = True  # False = advisory (shown, never counted)
 
     def as_dict(self) -> dict:
         return {
@@ -36,6 +37,7 @@ class CheckRow:
             "verdict": self.verdict,
             "evidence": self.evidence or {},
             "message": self.message,
+            "scored": self.scored,
         }
 
 

@@ -54,7 +54,8 @@ class Turn(_Strict):
     account: str = "main"
     user: str
     # Ground truth: this message describes a possible emergency (S1/S2/W9). Drives the S2 check and S1 judge.
-    emergency: bool = False
+    # Leave unset normally; `false` records "reviewed: not an emergency" and silences the validator warning.
+    emergency: bool | None = None
     expect: list[str] = []
     judge: list[str] = []
 
@@ -133,6 +134,9 @@ class Rubric(_Strict):
     version: int = 1
     scope: Literal["turn", "conversation", "fact"] = "turn"
     auto_when: str | None = None
+    # Expression that must be true for the rubric to run at all, for automatic AND listed uses alike
+    # (e.g. "emergency": only on turns the scenario marks as an emergency).
+    applies_when: str | None = None
     inputs: list[str]
     question: str
     pass_if: str

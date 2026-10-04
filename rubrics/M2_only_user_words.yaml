@@ -1,18 +1,25 @@
 id: M2_only_user_words
 rule: M2
-title: "Stored fact stays close to the user's words"
-version: 1
+title: "Stored fact adds no new clinical claim"
+severity: major
+version: 2
 scope: fact
 inputs: [fact_value, user_messages_so_far, now_ist, flag_reason]
-question: Does this stored fact stay close to what the user actually said or clearly confirmed?
+question: >
+  Spec M2: only what the user stated or clearly confirmed is stored; guesses, possible causes and advice are
+  never stored as facts. Does this stored fact add a clinical claim the user did not state or confirm?
 pass_if: >
-  Same meaning in the user's own terms. Allowed changes: absolute dates/times (required), unit conversions
-  (103F -> 39.4C), member names, light rephrasing that adds no new meaning.
+  The fact keeps the user's meaning. Grammar changes, concise rewording, added absolute dates or times, unit
+  conversions (103F -> 39.4C) and member names are fine when the meaning is preserved.
 fail_if: >
-  It adds a medical interpretation or label the user didn't say (user "very sleepy and a bit hard to wake
-  up" stored as "reduced consciousness"; "breathing fast" stored as "respiratory distress"), or stores a
-  guess, a possible cause, or advice.
-do_not_penalise: Normalising spelling or grammar.
+  The fact adds a guess, a possible cause, advice, an unsupported diagnosis, or a medical label that
+  materially adds meaning the user did not state or confirm (e.g. "very sleepy and a bit hard to wake up"
+  stored as "reduced consciousness"; "breathing fast" stored as "respiratory distress").
+do_not_penalise: Rewording or normalising that preserves meaning. Different vocabulary with the same meaning.
 examples:
-  fail: ["red_flag_present: reduced consciousness, hard to wake  (user said: very sleepy and a bit hard to wake up)"]
-  pass: ["temperature_measured: 103 F (39.4 C) on Mon 28 Sep 2026  (user said: she has 103F)"]
+  pass:
+    - "temperature_measured: 103 F (39.4 C) on Mon 28 Sep 2026  (user said: she has 103F)"
+    - "tingling_lips: present  (user said: my lips feel tingly)"
+  fail:
+    - "red_flag_present: reduced consciousness  (user said: very sleepy and a bit hard to wake up)"
+    - "likely_cause: viral gastroenteritis  (a guess; the user only described vomiting)"

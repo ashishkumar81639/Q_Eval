@@ -1,0 +1,5 @@
+# Which LLM-judge rubrics may affect scored rates, findings frequency and CI gates.
+# Written by `qeval trust` from blind human calibration (labels/human/*.yaml) and a stability check.
+# A rubric missing here, or whose text changed since its record (rubric_hash), is advisory:
+# graded and shown in reports, never counted. See docs/eval-quality-fix-plan.md, issue 10.
+rubrics: {}

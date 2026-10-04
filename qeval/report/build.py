@@ -5,6 +5,7 @@ from __future__ import annotations
 import json
 from collections import defaultdict
 from pathlib import Path
+from typing import Any
 from xml.sax.saxutils import escape
 
 from jinja2 import Environment, FileSystemLoader, select_autoescape
@@ -240,6 +241,49 @@ def group_cards(cards: list[dict], agg: Aggregate, rules_info: dict) -> list[dic
     return groups
 
 
+def advisory_view(
+    agg: Aggregate, rows: list[dict], norm: dict, rubrics: dict, current: dict, rules_info: dict
+) -> list[dict]:
+    """Advisory checks (not counted): one line each, with what happened in the first failing run."""
+    from qeval.report.describe import describe
+
+    first_fail: dict[tuple[str, str], dict] = {}
+    for r in rows:
+        if r.get("scored") is False and r["verdict"] == "fail":
+            first_fail.setdefault((r["scenario_run_id"], r["check_id"]), r)
+    out: list[dict[str, Any]] = []
+    for st in agg.advisory:
+        if not st.fails:
+            continue
+        srid = st.failing_runs[0]
+        nr = norm.get(srid)
+        row = first_fail.get((srid, st.check_id))
+        d = None
+        if row is not None and nr is not None:
+            d = describe(
+                row, rubrics, {"scenario": nr.scenario.model_dump(mode="json")}, _names(nr), current=current
+            )
+        info = rules_info.get(st.rule)
+        out.append(
+            {
+                "rule": st.rule,
+                "rule_title": info.title if info else st.rule,
+                "severity": st.severity,
+                "check": st.check_id,
+                "check_title": d.check_title if d else st.check_id,
+                "kind": st.kind,
+                "scenario": st.scenario_id,
+                "scenario_title": getattr(nr.scenario, "title", st.scenario_id) if nr else st.scenario_id,
+                "fails": st.fails,
+                "n": st.n,
+                "got": d.got if d else "",
+            }
+        )
+    sev = {"critical": 0, "major": 1, "minor": 2}
+    out.sort(key=lambda a: (sev.get(a["severity"], 9), -a["fails"] / max(a["n"], 1), a["rule"]))
+    return out
+
+
 def results_json(run_row: dict, grading: dict, agg: Aggregate) -> dict:
     critical = [r for r in agg.rules if r["severity"] == "critical" and r["fails"]]
     return {
@@ -398,11 +442,17 @@ def build_report(
     current = _current_scenarios()
     cards = build_cards(agg, rows, norm, rubrics, current)
     rule_groups = group_cards(cards, agg, rules_info)
+    advisory = advisory_view(agg, rows, norm, rubrics, current, rules_info)
+    from qeval.judge.trust import trust_status
+
+    judge_trust = trust_status(rubrics)
 
     out_dir = out_dir or Path(repo_runs_dir(repo)) / run_id / "report"
     out_dir.mkdir(parents=True, exist_ok=True)
     res = results_json(run_row, grading, agg)
     res["gate"] = {"exit_code": code, "reasons": reasons}
+    res["advisory"] = [{k: v for k, v in a.items() if k != "example"} for a in advisory]
+    res["judge_trust"] = judge_trust
     (out_dir / "results.json").write_text(json.dumps(res, indent=1, ensure_ascii=False, default=str))
     (out_dir / "junit.xml").write_text(junit_xml(agg))
 
@@ -413,6 +463,8 @@ def build_report(
         run=run_row,
         grading=grading,
         rule_groups=rule_groups,
+        advisory=advisory,
+        judge_trust=judge_trust,
         rules_info=rules_info,
         agg=agg,
         res=res,

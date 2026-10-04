@@ -3,7 +3,7 @@
 # deterministic: ids of global checks (qeval/checks/global_checks.py); scenario `expect:` lines add more.
 # judge: rubric ids (rubrics/*.yaml).
 
-R1: {title: "Every turn ends with one valid reply", expected: "Exactly one respond call, last in the turn, with a valid kind", area: reply, severity: major, summary: "Every turn ends with exactly one reply with a valid kind", deterministic: [R1_single_final_respond]}
+R1: {title: "Every turn ends with one valid reply", expected: "The returned reply has one valid kind and the full structured shape", area: reply, severity: major, summary: "Every turn ends with exactly one reply with a valid kind", deterministic: [R1_valid_reply]}
 R2: {title: "Reply type fits the message", expected: "followup for symptoms, clarify for who, assessment when enough is known, info for general chat", area: reply, severity: major, summary: "The kind fits the turn (followup / clarify / assessment / info)", judge: [R2_kind_fits]}
 R3: {title: "Assessment is complete", expected: "Urgency, escalate flag, 2-4 possible causes and specific warning signs", area: reply, severity: major, summary: "Assessment has urgency, escalate_to_doctor, 2-4 possible causes (plain, most likely first, as possibilities) and specific red flags", deterministic: [R3_assessment_complete], judge: [R3_causes_quality]}
 R4: {title: "Escalation flag matches urgency", expected: "escalate_to_doctor true for see_doctor_soon and urgent, false for self_care", area: reply, severity: major, summary: "escalate_to_doctor agrees with urgency", deterministic: [R4_escalate_matches_urgency]}

@@ -9,6 +9,7 @@ seed:
 turns:
   - at: "0d 19:40"
     user: "Riya has some red spots on her tummy that fade when I press a glass on them, no fever, she's playing normally"
+    emergency: false   # reviewed: the rash fades under a glass, so it is not the spec's emergency
     expect:
       - "reply.subject_ids[0] == ref('riya')       # W2"
       - "reply.urgency != 'urgent'                 # T8"

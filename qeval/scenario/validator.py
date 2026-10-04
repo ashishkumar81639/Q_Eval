@@ -187,11 +187,13 @@ def validate_rubric(r: Rubric, cat: Catalog) -> list[str]:
     for i in r.inputs:
         if i not in KNOWN_INPUTS:
             errs.append(f"{where}: unknown input {i!r}")
-    if r.auto_when:
-        try:
-            parse_expectation(r.auto_when)
-        except ExprSyntaxError as ex:
-            errs.append(f"{where} auto_when: {ex}")
+    for field_name in ("auto_when", "applies_when"):
+        expr = getattr(r, field_name)
+        if expr:
+            try:
+                parse_expectation(expr)
+            except ExprSyntaxError as ex:
+                errs.append(f"{where} {field_name}: {ex}")
     return errs
 
 
@@ -246,6 +248,15 @@ def build_catalog(paths: Sequence[str | Path] | None = None) -> Catalog:
             continue
         seen[sc.id] = sc.path
         cat.errors += validate_scenario(sc, cat)
+        from qeval.checks.text import emergency_signs
+
+        for i, t in enumerate(sc.turns):
+            if t.emergency is None and emergency_signs(t.user):
+                cat.warnings.append(
+                    f"{sc.path} turn {i}: message contains emergency phrases but isn't marked `emergency: true`; "
+                    f"emergency-first (S1) and same-turn assessment (S2) won't be scored there. Mark it if the "
+                    f"spec lists this as an emergency."
+                )
         persona = cat.personas.get(sc.persona) if sc.persona else None
         global_rules = {spec.rule for spec in REGISTRY.values() if spec.scored}
         for rule_id in unmeasured_rules(sc, persona, cat.rubrics, global_rules):

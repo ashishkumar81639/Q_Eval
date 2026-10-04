@@ -30,7 +30,7 @@ async def test_smoke_scripted(tmp_path):
     assert [s["status"] for s in srs] == ["valid"]
     gid = await grade(repo, run_id, get_settings(), judge=False)
     rows = repo.check_results(gid)
-    assert any(r["check_id"] == "R1_single_final_respond" and r["verdict"] == "pass" for r in rows)
+    assert any(r["check_id"] == "R1_valid_reply" and r["verdict"] == "pass" for r in rows)
 
 
 @pytest.mark.asyncio

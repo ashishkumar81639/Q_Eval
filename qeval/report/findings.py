@@ -117,18 +117,32 @@ class RunData:
                 out[e["id"]] = f"{e.get('complaint')} episode"
         return out
 
-    def failing_rows(self, sr_id: str, rules: list[str]) -> list[dict]:
+    def failing_rows(self, sr_id: str, rules: list[str], include_advisory: bool = False) -> list[dict]:
         return [
             r
             for r in self.rows.get(sr_id, [])
-            if r["verdict"] == "fail" and r["rule"] in rules and r["kind"] not in ("sim", "harness")
+            if r["verdict"] == "fail"
+            and r["rule"] in rules
+            and r["kind"] not in ("sim", "harness")
+            and (include_advisory or r.get("scored") is not False)
         ]
 
-    def scenario_rate(self, scenario_id: str, rules: list[str]) -> dict | None:
+    def has_scored(self, scenario_ids: list[str], rules: list[str]) -> bool:
+        """Any scored pass/fail on these rules in these scenarios (otherwise the finding is advisory-only)."""
+        return any(
+            r.get("scored") is not False and r["rule"] in rules and r["verdict"] in ("pass", "fail")
+            for sid in scenario_ids
+            for s in self.by_scenario.get(sid, [])
+            for r in self.rows.get(s["id"], [])
+        )
+
+    def scenario_rate(
+        self, scenario_id: str, rules: list[str], include_advisory: bool = False
+    ) -> dict | None:
         srs = self.by_scenario.get(scenario_id) or []
         if not srs:
             return None
-        fails = [s for s in srs if self.failing_rows(s["id"], rules)]
+        fails = [s for s in srs if self.failing_rows(s["id"], rules, include_advisory)]
         lo, hi = wilson(len(fails), len(srs))
         return {
             "fails": len(fails),
@@ -186,8 +200,10 @@ def _turn_evidence(rd: RunData, sr: dict, turn: dict | None) -> dict:
     }
 
 
-def _failing_example(rd: RunData, sr_id: str, rules: list[str], rubrics: dict, current: dict) -> dict | None:
-    rows = rd.failing_rows(sr_id, rules)
+def _failing_example(
+    rd: RunData, sr_id: str, rules: list[str], rubrics: dict, current: dict, include_advisory: bool = False
+) -> dict | None:
+    rows = rd.failing_rows(sr_id, rules, include_advisory)
     if not rows:
         return None
     rows.sort(
@@ -205,8 +221,8 @@ def _failing_example(rd: RunData, sr_id: str, rules: list[str], rubrics: dict, c
     return {**_turn_evidence(rd, sr, turn), "check": d.check_title, "got": d.got, "run": rd.name}
 
 
-def _passing_example(rd: RunData, sr: dict, rules: list[str]) -> dict | None:
-    if rd.failing_rows(sr["id"], rules):
+def _passing_example(rd: RunData, sr: dict, rules: list[str], include_advisory: bool = False) -> dict | None:
+    if rd.failing_rows(sr["id"], rules, include_advisory):
         return None
     ts = rd.turns.get(sr["id"], [])
     if not ts:
@@ -214,7 +230,9 @@ def _passing_example(rd: RunData, sr: dict, rules: list[str]) -> dict | None:
     return {**_turn_evidence(rd, sr, ts[0]), "run": rd.name}
 
 
-def collect_examples(runs: list[RunData], f: FindingDef, rubrics: dict, current: dict) -> tuple[list, list]:
+def collect_examples(
+    runs: list[RunData], f: FindingDef, rubrics: dict, current: dict, include_advisory: bool = False
+) -> tuple[list, list]:
     """Failing examples (E1..), one per scenario first, latest run preferred; passing twins (T1..)."""
     examples: list[dict] = []
     for sid in f.scenarios:
@@ -223,7 +241,7 @@ def collect_examples(runs: list[RunData], f: FindingDef, rubrics: dict, current:
                 (
                     e
                     for sr in rd.by_scenario.get(sid, [])
-                    if (e := _failing_example(rd, sr["id"], f.rules, rubrics, current))
+                    if (e := _failing_example(rd, sr["id"], f.rules, rubrics, current, include_advisory))
                 ),
                 None,
             )
@@ -236,7 +254,12 @@ def collect_examples(runs: list[RunData], f: FindingDef, rubrics: dict, current:
     for sid in f.twins:
         for rd in reversed(runs):
             ex = next(
-                (e for sr in rd.by_scenario.get(sid, []) if (e := _passing_example(rd, sr, f.rules))), None
+                (
+                    e
+                    for sr in rd.by_scenario.get(sid, [])
+                    if (e := _passing_example(rd, sr, f.rules, include_advisory))
+                ),
+                None,
             )
             if ex:
                 twins.append(ex)
@@ -269,15 +292,17 @@ def build_findings(repo: Repo, run_ids: list[str], findings_path: Path | None = 
 
     out_findings: list[dict[str, Any]] = []
     for f in ff.findings:
+        # Counted only from scored results; a finding with no scored evidence is shown as advisory.
+        advisory = not any(rd.has_scored(f.scenarios, f.rules) for rd in runs)
         per_scenario: list[dict[str, Any]] = []
         for sid in f.scenarios:
-            cells = [rd.scenario_rate(sid, f.rules) for rd in runs]
+            cells = [rd.scenario_rate(sid, f.rules, advisory) for rd in runs]
             per_scenario.append({"id": sid, "title": titles.get(sid, sid), "runs": cells})
         twins: list[dict[str, Any]] = []
         for sid in f.twins:
-            cells = [rd.scenario_rate(sid, f.rules) for rd in runs]
+            cells = [rd.scenario_rate(sid, f.rules, advisory) for rd in runs]
             twins.append({"id": sid, "title": titles.get(sid, sid), "runs": cells})
-        examples, twin_examples = collect_examples(runs, f, rubrics, current)
+        examples, twin_examples = collect_examples(runs, f, rubrics, current, advisory)
         for e in examples + twin_examples:
             e["scenario_title"] = titles.get(e["scenario"], e["scenario"])
         breakdown = None
@@ -308,6 +333,7 @@ def build_findings(repo: Repo, run_ids: list[str], findings_path: Path | None = 
             {
                 "id": f.id,
                 "title": f.title,
+                "advisory": advisory,
                 "status": f.status,
                 "status_label": STATUS_LABEL[f.status],
                 "rules": [
@@ -335,7 +361,7 @@ def build_findings(repo: Repo, run_ids: list[str], findings_path: Path | None = 
         )
     sev_order = {"critical": 0, "major": 1, "minor": 2}
     status_order = {"confirmed": 0, "judge": 1, "observation": 2}
-    out_findings.sort(key=lambda x: (status_order[x["status"]], sev_order[x["severity"]]))
+    out_findings.sort(key=lambda x: (x["advisory"], status_order[x["status"]], sev_order[x["severity"]]))
     return {
         "generated_at": datetime.now(UTC).isoformat(timespec="seconds"),
         "runs": [

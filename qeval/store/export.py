@@ -10,6 +10,8 @@ from qeval.store.repo import Repo
 from qeval.store.schema import SCHEMA_VERSION
 
 EXPORT_FORMAT_VERSION = 1
+# Schema versions whose exported tables (runs, scenario_runs, turns, usage) match the current one.
+COMPATIBLE_SCHEMAS = {"2", "3"}
 
 
 class ExportFormatError(SystemExit):
@@ -104,7 +106,7 @@ def validate_header(header: dict) -> None:
         raise ExportFormatError(
             f"export format {fmt!r} is not supported (this harness reads {EXPORT_FORMAT_VERSION})"
         )
-    if str(header.get("schema_version")) != SCHEMA_VERSION:
+    if str(header.get("schema_version")) not in COMPATIBLE_SCHEMAS | {SCHEMA_VERSION}:
         raise ExportFormatError(
             f"export was written with database schema {header.get('schema_version')!r}; this harness uses "
             f"{SCHEMA_VERSION}. Import it with the matching harness version ({header.get('harness_sha')})."

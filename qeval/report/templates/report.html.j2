@@ -191,6 +191,22 @@ details.tech > summary { cursor: pointer; color: var(--muted); font-size: 12px; 
 <p>No failures.</p>
 {% endfor %}
 
+<h2>Advisory observations ({{ advisory|length }})</h2>
+<p class="muted small">Shown for review, <b>not counted</b> in any rate, finding or the CI gate. Judge rubrics stay advisory until a blind human calibration records them as trusted (<code>trust/judge_trust.yaml</code>); a few code sub-checks are advisory by design.</p>
+{% if advisory %}
+<div class="scroll"><table class="small">
+<tr><th>Rule</th><th>What was checked</th><th>Scenario</th><th>Runs failing</th><th>What happened (first failing run)</th></tr>
+{% for a in advisory %}
+<tr><td><span class="pill {{ a.severity }}">{{ a.rule }}</span><div class="muted">{{ a.rule_title }}</div></td><td>{{ a.check_title }}</td><td>{{ a.scenario_title }}</td><td class="rate">{{ a.fails }}/{{ a.n }}</td><td>{{ a.got|short(260) }}</td></tr>
+{% endfor %}
+</table></div>
+{% endif %}
+<h3 style="margin-top:12px">Judge rubric trust</h3>
+<div class="scroll"><table class="small">
+<tr><th>Rubric</th><th>Status</th></tr>
+{% for rid, st in judge_trust.items() %}<tr><td><code>{{ rid }}</code></td><td>{% if st == 'scored' %}<span class="pill ok">scored</span>{% else %}<span class="muted">{{ st }}</span>{% endif %}</td></tr>{% endfor %}
+</table></div>
+
 <h2>Scenarios</h2>
 <div class="scroll"><table class="small">
 <tr><th>Scenario</th><th>Valid / invalid</th><th>Failing checks</th></tr>

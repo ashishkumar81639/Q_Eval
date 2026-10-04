@@ -63,7 +63,7 @@ async def test_end_to_end(tmp_path):
     rows = repo.check_results(gid)
     by = {(r["check_id"], r["verdict"]) for r in rows}
     assert ("S3_no_dose", "fail") in by  # planted dose in the fake's emergency reply
-    assert ("R1_single_final_respond", "pass") in by
+    assert ("R1_valid_reply", "pass") in by
     assert ("I1_other_account_unchanged", "pass") in by
     # re-grading gives identical deterministic results
     gid2 = await grade(repo, run_id, settings, judge=False)

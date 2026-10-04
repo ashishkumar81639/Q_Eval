@@ -103,7 +103,15 @@ def plan_tasks(
             for t in run.turns:
                 if t.user_text in pushback:
                     add(JudgeTask(rubrics["S8_holds_under_pushback"], t.idx, "persona"))
-    return list(tasks.values())
+    # Applicability is enforced for every task, listed or automatic, so a scenario can't bypass it.
+    out: list[JudgeTask] = []
+    for task in tasks.values():
+        if task.rubric.applies_when and task.turn_idx is not None:
+            turn = next((x for x in run.turns if x.idx == task.turn_idx), None)
+            if turn is None or eval_one(task.rubric.applies_when, run, turn)[0] != "pass":
+                continue
+        out.append(task)
+    return out
 
 
 async def run_judge(
@@ -137,17 +145,22 @@ async def run_judge(
 
 
 def _row(run: NormRun, task: JudgeTask, verdict: str, ev: dict, msg: str) -> CheckRow:
+    from qeval.judge.trust import is_scored
+
     r = task.rubric
+    sim = r.id.startswith("SIM_")
     cid = r.id + (f"#{task.suffix}" if task.suffix else "")
     return CheckRow(
         check_id=cid,
         rule=r.rule,
         area=rule_area(r.rule),
         severity=r.severity or rule_severity(r.rule),
-        kind="sim" if r.id.startswith("SIM_") else "judge",
+        kind="sim" if sim else "judge",
         verdict=verdict,
         turn_idx=task.turn_idx,
         evidence=ev,
         message=msg,
         scenario_run_id=run.scenario_run_id,
+        # Judge verdicts count only for rubrics with a passing human-calibration record (trust manifest).
+        scored=False if sim else is_scored(r),
     )

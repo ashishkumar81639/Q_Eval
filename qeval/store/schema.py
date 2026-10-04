@@ -5,7 +5,7 @@ from __future__ import annotations
 import sqlalchemy as sa
 from sqlalchemy.dialects.postgresql import JSONB
 
-SCHEMA_VERSION = "2"
+SCHEMA_VERSION = "3"
 
 JSON = sa.JSON().with_variant(JSONB(), "postgresql")
 metadata = sa.MetaData()
@@ -102,6 +102,9 @@ check_results = sa.Table(
     sa.Column("verdict", sa.Text),
     sa.Column("evidence", JSON),
     sa.Column("message", sa.Text),
+    # False = advisory: shown in reports, excluded from rates, findings frequency and CI gates.
+    # NULL (rows written before schema 3) counts as scored.
+    sa.Column("scored", sa.Boolean),
 )
 sa.Index("ix_check_results_grading_rule", check_results.c.grading_id, check_results.c.rule)
 

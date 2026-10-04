@@ -6,9 +6,11 @@ Grading never calls the Q API.
 from __future__ import annotations
 
 import asyncio
+import dataclasses
 import hashlib
 import logging
 from pathlib import Path
+from typing import Any
 
 from qeval.analysis.attempts import authoritative
 from qeval.checks.expectations import CheckRow, run_expectations
@@ -61,6 +63,7 @@ def run_global_checks(run: NormRun, only: set[str] | None = None) -> list[CheckR
                     evidence=v.evidence,
                     message=v.message,
                     scenario_run_id=run.scenario_run_id,
+                    scored=spec.scored,
                 )
             )
     return rows
@@ -115,8 +118,54 @@ def resolve_scenario(sr: dict, cache: dict[str, Scenario], personas: dict, *, al
     return sc, (personas.get(sc.persona) if sc.persona else None)
 
 
+def conversation_fingerprint(sc: Scenario, persona) -> str:
+    """Everything that shaped the conversation with Q: seeds, every user message and its timing, the persona.
+    Labels, expectations, rules and judge lists are deliberately excluded."""
+    import json
+
+    body: dict[str, Any] = {
+        "accounts": {k: v.model_dump(mode="json") for k, v in sc.accounts.items()},
+        "turns": [[t.at, t.account, t.user] for t in sc.turns],
+        "persona": None,
+    }
+    if persona is not None:
+        body["persona"] = persona.model_dump(
+            mode="json",
+            include={
+                "account",
+                "member_ref",
+                "opening",
+                "opening_at",
+                "turn_gap_minutes",
+                "hidden_facts",
+                "unknown_answer",
+                "style",
+                "late_reveal",
+                "after_assessment",
+                "max_turns",
+            },
+        )
+        if body["persona"].get("late_reveal"):
+            body["persona"]["late_reveal"].pop("emergency", None)  # a label, not conversation input
+    return hashlib.sha256(json.dumps(body, sort_keys=True).encode()).hexdigest()
+
+
+def relabel_to_current(sc: Scenario, persona, current_sc: Scenario | None, current_persona):
+    """Use the current file's labels only if the conversation it describes is identical to what ran."""
+    if current_sc is None:
+        return None
+    if conversation_fingerprint(sc, persona) != conversation_fingerprint(current_sc, current_persona):
+        return None
+    return current_sc, current_persona
+
+
 def norm_runs_for(
-    repo: Repo, run_id: str, *, allow_changed: bool = False
+    repo: Repo,
+    run_id: str,
+    *,
+    allow_changed: bool = False,
+    relabel: bool = False,
+    relabelled: set[str] | None = None,
 ) -> list[tuple[dict, NormRun | None, str]]:
     """Authoritative valid attempts of a run -> [(scenario_run row, NormRun or None, problem)]."""
     run_row = repo.get_run(run_id)
@@ -132,6 +181,14 @@ def norm_runs_for(
         except ScenarioResolveError as e:
             out.append((sr, None, str(e)))
             continue
+        if relabel and sr.get("scenario_path"):
+            cur = load_scenario_for(sr, cache)
+            cur_persona = personas.get(cur.persona) if cur and cur.persona else None
+            swapped = relabel_to_current(sc, persona, cur, cur_persona)
+            if swapped is not None:
+                if cur is not None and cur.content_hash != sr.get("scenario_hash") and relabelled is not None:
+                    relabelled.add(sc.id)
+                sc, persona = swapped
         nr = build_norm_run(sc, sr, turns_by_sr.get(sr["id"], []), run_row["anchor_date"], persona=persona)
         out.append((sr, nr, ""))
     return out
@@ -161,17 +218,8 @@ def resolve_flags(rows: list[CheckRow]) -> list[CheckRow]:
                     if not verdicts
                     else f"judge verdicts {sorted(set(verdicts))}"
                 )
-                r = CheckRow(
-                    r.check_id,
-                    r.rule,
-                    r.area,
-                    r.severity,
-                    r.kind,
-                    "unresolved",
-                    r.turn_idx,
-                    {**(r.evidence or {}), "unresolved_because": why},
-                    r.message,
-                    r.scenario_run_id,
+                r = dataclasses.replace(
+                    r, verdict="unresolved", evidence={**(r.evidence or {}), "unresolved_because": why}
                 )
         out.append(r)
     return out
@@ -185,6 +233,7 @@ async def grade(
     judge: bool = True,
     only_checks: set[str] | None = None,
     allow_changed: bool = False,
+    relabel: bool = False,
 ) -> str:
     load_checks()
     rules = load_rules()
@@ -206,6 +255,8 @@ async def grade(
             max_tokens_budget=settings.max_judge_tokens,
             concurrency=settings.judge_concurrency,
         )
+    relabelled: set[str] = set()
+    items = norm_runs_for(repo, run_id, allow_changed=allow_changed, relabel=relabel, relabelled=relabelled)
     gid = repo.create_grading(
         run_id,
         checks_version(),
@@ -215,9 +266,10 @@ async def grade(
             "judge": judge,
             "only_checks": sorted(only_checks) if only_checks else None,
             "allow_changed_scenarios": allow_changed,
+            # Scenarios graded with current labels/expectations (identical conversation inputs to what ran).
+            "relabelled_scenarios": sorted(relabelled) if relabel else None,
         },
     )
-    items = norm_runs_for(repo, run_id, allow_changed=allow_changed)
     sem = asyncio.Semaphore(max(4, settings.judge_concurrency))  # scenario runs judged at once
 
     async def grade_one(sr: dict, nr: NormRun | None, problem: str) -> None:

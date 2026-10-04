@@ -249,6 +249,12 @@ def grade(
     allow_changed_scenarios: Annotated[
         bool, typer.Option(help="Old runs without a snapshot: grade with the edited scenario file anyway")
     ] = False,
+    relabel: Annotated[
+        bool,
+        typer.Option(
+            help="Use current scenario labels/expectations where the conversation inputs are unchanged"
+        ),
+    ] = False,
 ) -> None:
     """Grade step only (never calls the agent); prints the grading id."""
     from qeval.grading.grade import grade as do_grade
@@ -265,6 +271,7 @@ def grade(
             judge=not no_judge,
             only_checks=set(only_check) if only_check else None,
             allow_changed=allow_changed_scenarios,
+            relabel=relabel,
         )
     )
     rows = repo.check_results(gid)
@@ -331,6 +338,28 @@ def findings(
     data = build_findings(repo, ids)
     for p in write_findings(data, out):
         console.print(f"wrote {p}")
+
+
+@app.command()
+def compare(
+    run_id: Annotated[str, typer.Argument(help="Run id")],
+    baseline: Annotated[str, typer.Option(help="Baseline grading id")],
+    new: Annotated[str | None, typer.Option(help="New grading id (default: latest completed)")] = None,
+    out: Annotated[Path, typer.Option(help="Output directory")] = ROOT / "results" / "comparison",
+) -> None:
+    """List every result whose verdict or scored/advisory status changed between two gradings."""
+    from qeval.analysis.compare import compare as do_compare
+    from qeval.analysis.compare import write_comparison
+
+    repo = _repo(get_settings())
+    run_id = _resolve_run(repo, run_id)
+    new = new or repo.latest_grading(run_id)
+    if new is None:
+        raise typer.BadParameter("no completed grading to compare")
+    data = do_compare(repo, run_id, baseline, new)
+    for p in write_comparison(data, out):
+        console.print(f"wrote {p}")
+    console.print(f"{data['changed']} results changed ({data['critical_changed']} critical)")
 
 
 @app.command("eval")

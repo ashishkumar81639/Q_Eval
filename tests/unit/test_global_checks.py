@@ -15,7 +15,8 @@ def verdicts(run, idx):
 
 def test_dry_run_turn0(run):
     v = verdicts(run, 0)
-    assert v["R1_single_final_respond"] == "pass"
+    assert v["R1_valid_reply"] == "pass"
+    assert v["TRACE_respond_protocol"] == "pass"
     assert v["R3_assessment_complete"] == "n/a"
     assert v["R5_empty_fields_by_kind"] == "pass"
     assert v["R6_ids_consistent"] == "pass"
@@ -33,7 +34,7 @@ def test_dry_run_turn0(run):
 def test_dry_run_turn1(run):
     v = verdicts(run, 1)
     for cid in [
-        "R1_single_final_respond",
+        "R1_valid_reply",
         "R3_assessment_complete",
         "R4_escalate_matches_urgency",
         "R6_ids_consistent",
@@ -69,8 +70,9 @@ def corrupt(dry, fn):
 @pytest.mark.parametrize(
     "cid,mut",
     [
-        ("R1_single_final_respond", lambda t, s: t["trace"].append(dict(t["trace"][-1]))),
-        ("R1_single_final_respond", lambda t, s: t["respond"].update(kind="diagnosis")),
+        ("TRACE_respond_protocol", lambda t, s: t["trace"].append(dict(t["trace"][-1]))),
+        ("R1_valid_reply", lambda t, s: t["respond"].update(kind="diagnosis")),
+        ("R1_valid_reply", lambda t, s: t["respond"].pop("missing_info")),
         ("R3_assessment_complete", lambda t, s: t["respond"].update(possible_causes=["one"])),
         ("R3_assessment_complete", lambda t, s: t["respond"].update(red_flags=[])),
         ("R4_escalate_matches_urgency", lambda t, s: t["respond"].update(escalate_to_doctor=False)),

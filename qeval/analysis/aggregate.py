@@ -82,6 +82,7 @@ class Aggregate:
     counts: dict
     problems: dict
     cost: dict
+    advisory: list[CheckStat] = field(default_factory=list)  # shown, never counted
 
 
 def run_verdict(verdicts: list[str]) -> str | None:
@@ -109,7 +110,9 @@ def aggregate(
     excluded_sim = {r["scenario_run_id"] for r in rows if r["kind"] == "sim" and r["verdict"] == "fail"}
 
     # (scenario_run, check) -> verdicts
+    # Scored rows feed every number; advisory rows (scored is False) get the same statistics, kept apart.
     per: dict[tuple[str, str], list[str]] = defaultdict(list)
+    per_adv: dict[tuple[str, str], list[str]] = defaultdict(list)
     meta: dict[str, dict] = {}
     for r in rows:
         if r["scenario_run_id"] not in valid_ids or r["kind"] == "harness":
@@ -118,37 +121,42 @@ def aggregate(
             continue
         if r["kind"] == "sim" or r["verdict"] == "info":
             continue
-        per[(r["scenario_run_id"], r["check_id"])].append(r["verdict"])
+        target = per_adv if r.get("scored") is False else per
+        target[(r["scenario_run_id"], r["check_id"])].append(r["verdict"])
         meta.setdefault(
             r["check_id"],
             {"rule": r["rule"], "area": r["area"], "severity": r["severity"], "kind": r["kind"]},
         )
 
-    stats: dict[tuple[str, str], CheckStat] = {}
-    for (srid, cid), verdicts in per.items():
-        sc_id = sr_by_id[srid]["scenario_id"]
-        m = meta[cid]
-        st = stats.setdefault(
-            (sc_id, cid), CheckStat(sc_id, cid, m["rule"], m["area"], m["severity"], m["kind"])
+    def tally(source: dict[tuple[str, str], list[str]]) -> list[CheckStat]:
+        stats: dict[tuple[str, str], CheckStat] = {}
+        for (srid, cid), verdicts in source.items():
+            sc_id = sr_by_id[srid]["scenario_id"]
+            m = meta[cid]
+            st = stats.setdefault(
+                (sc_id, cid), CheckStat(sc_id, cid, m["rule"], m["area"], m["severity"], m["kind"])
+            )
+            v = run_verdict(verdicts)
+            if v is None:
+                st.uncounted += 1
+                continue
+            if v == "unresolved":
+                st.unresolved += 1
+                st.unresolved_runs.append(srid)
+                continue
+            st.n += 1
+            if v == "fail":
+                st.fails += 1
+                st.failing_runs.append(srid)
+            else:
+                st.passing_runs.append(srid)
+        return sorted(
+            stats.values(),
+            key=lambda s: (SEVERITY_ORDER.get(s.severity, 9), -s.rate, s.scenario_id, s.check_id),
         )
-        v = run_verdict(verdicts)
-        if v is None:
-            st.uncounted += 1
-            continue
-        if v == "unresolved":
-            st.unresolved += 1
-            st.unresolved_runs.append(srid)
-            continue
-        st.n += 1
-        if v == "fail":
-            st.fails += 1
-            st.failing_runs.append(srid)
-        else:
-            st.passing_runs.append(srid)
 
-    checks = sorted(
-        stats.values(), key=lambda s: (SEVERITY_ORDER.get(s.severity, 9), -s.rate, s.scenario_id, s.check_id)
-    )
+    checks = tally(per)
+    advisory = tally(per_adv)
 
     # rules
     by_rule: dict[str, list[CheckStat]] = defaultdict(list)
@@ -319,5 +327,5 @@ def aggregate(
         },
     }
     return Aggregate(
-        checks, rules, areas, sorted(scen.values(), key=lambda d: d["id"]), counts, problems, cost
+        checks, rules, areas, sorted(scen.values(), key=lambda d: d["id"]), counts, problems, cost, advisory
     )

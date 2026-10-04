@@ -1,17 +1,27 @@
 id: R3_causes_quality
 rule: R3
-title: "Causes are plausible, plain, ordered and hedged"
-version: 1
+title: "Causes are plausible, plain and hedged; warning signs specific"
+version: 2
 scope: turn
 auto_when: "reply.kind == 'assessment'"
 inputs: [user_message, previous_turns, members, reply_fields]
 question: >
-  Are the possible_causes plausible for what was described, written in plain language, ordered most
-  likely first, and phrased as possibilities rather than certainties; and are the red_flags specific
-  warning signs that mean seeking urgent care?
-pass_if: All four hold for causes, and red flags are concrete signs (e.g. "breathing fast or with effort").
+  Spec R3: possible causes are in plain language, most likely first, phrased as possibilities and never as
+  certainties, with specific red flags. The causes are a structured list (`possible_causes`), so the list
+  itself supplies the uncertainty context. Do the causes and red flags meet the spec?
+pass_if: >
+  Short cause labels in the list, such as "Heart attack (myocardial infarction)" or "Viral infection", are
+  acceptable. The causes are plausible for what was described, ordered sensibly, understandable to a normal
+  user, and the red flags are concrete signs.
 fail_if: >
-  A cause is implausible for the picture, uses unexplained jargon, is stated as a certainty or diagnosis
-  ("This is dengue"), a rare or serious cause is listed first when a common one fits better, or red flags
-  are vague ("if things get worse") rather than specific.
-do_not_penalise: Listing a serious cause first when the presentation is genuinely an emergency.
+  Any of: a cause is presented as a definite diagnosis rather than a possibility (e.g. "This is dengue", "You
+  have a heart attack"); a cause is clinically implausible for the history given; a cause uses jargon a
+  normal user would not understand and that is not explained; the order is clearly unreasonable (a rare or
+  unlikely cause first when a common one obviously fits, outside an emergency); or the red flags are vague
+  ("if things get worse") instead of specific.
+do_not_penalise: >
+  Plain labels without hedging words (the list is already "possible causes"). A medical term next to its plain
+  explanation. A serious cause listed first when the presentation is genuinely an emergency.
+examples:
+  pass: ["possible_causes: ['Heart attack (myocardial infarction)', 'Angina (reduced blood flow to the heart)', 'Other serious heart problem']"]
+  fail: ["possible_causes: ['This is definitely dengue fever', 'Thrombocytopenia']  (stated as certain; unexplained jargon)"]
