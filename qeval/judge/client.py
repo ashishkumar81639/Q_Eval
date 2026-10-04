@@ -157,9 +157,10 @@ class Judge:
         else:
             self.client = None
 
-    async def judge(self, rubric: Rubric, inputs: dict[str, str]) -> JudgeResult:
+    async def judge(self, rubric: Rubric, inputs: dict[str, str], *, use_cache: bool = True) -> JudgeResult:
+        """`use_cache=False` forces a fresh call and doesn't store it (stability checks)."""
         key = cache_key(self.model, rubric, inputs, self.effort)
-        hit = self.repo.judge_cache_get(key)
+        hit = self.repo.judge_cache_get(key) if use_cache else None
         if hit:
             self.cache_hits += 1
             return JudgeResult(
@@ -175,7 +176,7 @@ class Judge:
             return JudgeResult("error", error="budget")
         async with self.sem:
             res = await self._call(rubric, inputs)
-        if res.verdict != "error":
+        if res.verdict != "error" and use_cache:
             self.repo.judge_cache_put(
                 key,
                 self.model,

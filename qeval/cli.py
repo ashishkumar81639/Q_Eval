@@ -362,6 +362,76 @@ def compare(
     console.print(f"{data['changed']} results changed ({data['critical_changed']} critical)")
 
 
+@app.command("label-pack")
+def label_pack(
+    run_ids: Annotated[list[str], typer.Argument(help="Runs to sample from (their latest gradings)")],
+    check: Annotated[list[str], typer.Option(help="Rubric/check id, or rule:W4 for all checks of a rule")],
+    mode: Annotated[
+        str, typer.Option(help="calibration (balanced pass/fail) or pass_audit (passes only)")
+    ] = "calibration",
+    n: Annotated[int, typer.Option(help="Items per check")] = 20,
+    seed: Annotated[int, typer.Option()] = 7,
+    name: Annotated[str | None, typer.Option(help="Pack name (default: mode + date)")] = None,
+) -> None:
+    """Write a blind labelling pack to labels/human/ (the eval's verdicts go to a separate key file)."""
+    from datetime import date
+
+    from qeval.analysis.calibration import make_pack
+
+    if mode not in ("calibration", "pass_audit"):
+        raise typer.BadParameter("mode must be calibration or pass_audit")
+    repo = _repo(get_settings())
+    ids = [_resolve_run(repo, r) for r in run_ids]
+    pack, key = make_pack(
+        repo, ids, check, n=n, seed=seed, mode=mode, name=name or f"{mode}_{date.today().isoformat()}"
+    )
+    console.print(f"pack: {pack}\nkey (do not open while labelling): {key}")
+
+
+@app.command()
+def stability(
+    run_ids: Annotated[list[str], typer.Argument(help="Runs to sample judge items from")],
+    rubric: Annotated[list[str], typer.Option(help="Rubric ids")],
+    n: Annotated[int, typer.Option()] = 10,
+    repeats: Annotated[int, typer.Option()] = 3,
+    seed: Annotated[int, typer.Option()] = 7,
+) -> None:
+    """Re-judge sampled items several times without the cache; record verdict stability (judge calls only)."""
+    from qeval.analysis.calibration import stability as do_stability
+
+    s = get_settings()
+    repo = _repo(s)
+    ids = [_resolve_run(repo, r) for r in run_ids]
+    rec = asyncio.run(do_stability(repo, s, ids, rubric, n=n, repeats=repeats, seed=seed))
+    for rid, r in rec["rubrics"].items():
+        console.print(
+            f"{rid}: {r['identical']}/{r['items']} items identical across {r['repeats']} runs "
+            f"({(r['stability'] or 0):.0%})"
+        )
+
+
+@app.command()
+def trust(
+    pack: Annotated[Path, typer.Argument(help="A labelled pack in labels/human/")],
+) -> None:
+    """Score a labelled pack and update trust/judge_trust.yaml (only rubrics meeting every threshold count)."""
+    from qeval.analysis.calibration import decide_trust, score_pack
+
+    cal = score_pack(pack)
+    out = ROOT / "trust" / f"calibration_{cal['pack']}.json"
+    out.write_text(json.dumps(cal, indent=1))
+    for c, m in cal["checks"].items():
+        console.print(
+            f"{c}: n={m['n']} agreement {m['agreement']:.0%} kappa {m['kappa']:.2f} "
+            f"fail precision {m['fail_precision']} fail recall {m['fail_recall']} "
+            f"missed failures {m['missed_failures']}",
+            highlight=False,
+        )
+    for rid, status in decide_trust(cal).items():
+        console.print(f"[bold]{rid}[/]: {status}")
+    console.print(f"calibration written to {out}; re-grade (judge verdicts come from cache) to apply.")
+
+
 @app.command("eval")
 def eval_cmd(
     paths: PathsArg = None,
