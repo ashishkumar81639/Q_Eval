@@ -9,5 +9,5 @@ turns:
     user: "I've had a runny nose and sneezing since yesterday, no fever, otherwise I feel fine"
   - user: "no other symptoms, eating and drinking normally, no breathing problems, I'm 31 and healthy"
 final_expect:
-  - "state.assessments(subject=ref('self')).count >= 1                  # T6"
-  - "state.assessments(subject=ref('self')).none(urgency == 'urgent')   # T8"
+  - "state.assessments(subject=ref('self')).count >= 1                  # T6: reaches an assessment within the conversation"
+  - "state.assessments(subject=ref('self')).none(urgency == 'urgent')   # T8: mild cold not called urgent"

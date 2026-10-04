@@ -13,6 +13,6 @@ turns:
     user: "now Aarav also has a fever since this morning"
     expect:
       - "reply.subject_ids[0] == ref('aarav')                      # W2"
-      - "reply.episode_id != ref('fever')                          # E5"
-      - "state.episodes(subject=ref('aarav')).count >= 1           # E1"
-      - "state.facts(subject=ref('riya'), this_turn=true).count == 0   # W10"
+      - "reply.episode_id != ref('fever')                          # E5: not the sister's fever episode"
+      - "state.episodes(subject=ref('aarav')).count >= 1           # E1: the son gets his own episode"
+      - "state.facts(subject=ref('riya'), this_turn=true).count == 0   # W10: nothing saved on the sister"

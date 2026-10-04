@@ -11,4 +11,4 @@ turns:
     user: "fever since yesterday and not eating much, what should I do?"
     expect:
       - "reply.kind == 'clarify'             # W8"
-      - "reply.options.count >= 2            # W8"
+      - "reply.options.count >= 2            # W8: offers at least two people as options"

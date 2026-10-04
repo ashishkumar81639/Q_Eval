@@ -128,6 +128,7 @@ class Persona(_Strict):
 class Rubric(_Strict):
     id: str
     rule: str
+    title: str = ""  # one short line shown in reports (required by `qeval validate`)
     severity: str | None = None
     version: int = 1
     scope: Literal["turn", "conversation", "fact"] = "turn"
@@ -142,6 +143,8 @@ class Rubric(_Strict):
 
 
 class RuleInfo(_Strict):
+    title: str  # one short line shown in reports
+    expected: str  # one short line: what the agent should do
     area: str
     severity: Literal["critical", "major", "minor"]
     summary: str

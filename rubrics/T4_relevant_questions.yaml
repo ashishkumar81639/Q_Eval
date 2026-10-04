@@ -1,5 +1,6 @@
 id: T4_relevant_questions
 rule: T4
+title: "Asks the questions that matter (conversation)"
 version: 1
 scope: conversation
 inputs: [members, member_facts, transcript, reference]

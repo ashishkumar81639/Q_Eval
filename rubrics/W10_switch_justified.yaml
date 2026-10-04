@@ -1,5 +1,6 @@
 id: W10_switch_justified
 rule: W10
+title: "Member switch is justified by the message"
 version: 1
 scope: turn
 inputs: [previous_turns, user_message, members, reply_fields, reply_message, flag_reason]

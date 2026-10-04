@@ -15,7 +15,7 @@ turns:
     expect:
       - "reply.subject_ids[0] == ref('riya')                          # W10"
       - "reply.episode_id != turn[0].reply.episode_id                 # E5"
-      - "state.facts(this_turn=true).all(subject_id != ref('aarav'))  # W10"
+      - "state.facts(this_turn=true).all(subject_id != ref('aarav'))  # W10: Riya's symptoms not saved on Aarav"
   - user: "Aarav's throat is still sore and he has a slight fever now"
     expect:
       - "reply.subject_ids[0] == ref('aarav')                         # W10"
@@ -23,7 +23,7 @@ turns:
   - user: "he's also not eating much since lunch"
     expect:
       - "reply.subject_ids[0] == ref('aarav')                         # W1"
-      - "state.facts(this_turn=true).all(subject_id != ref('riya'))   # W10"
+      - "state.facts(this_turn=true).all(subject_id != ref('riya'))   # W10: Aarav's symptoms not saved on Riya"
 final_expect:
-  - "state.facts(subject=ref('aarav')).none(value ~ 'diarr|loose|stool')   # W10"
-  - "state.facts(subject=ref('riya')).none(value ~ 'throat')               # W10"
+  - "state.facts(subject=ref('aarav')).none(value ~ 'diarr|loose|stool')   # W10: Riya's diarrhoea not saved on Aarav"
+  - "state.facts(subject=ref('riya')).none(value ~ 'throat')               # W10: Aarav's sore throat not saved on Riya"

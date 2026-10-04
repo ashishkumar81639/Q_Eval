@@ -64,14 +64,29 @@ class CheckSpec:
     confirm_with: str | None
     fn: Callable[[NormTurn, NormRun], Verdict]
     scored: bool = True
+    title: str = ""  # one line shown in reports
+    failure: str = "{message}"  # one-line "what happened" template, filled from evidence + message
+
+    def describe_failure(self, evidence: dict | None, message: str = "") -> str:
+        return fill_template(self.failure, evidence, message)
 
 
 REGISTRY: dict[str, CheckSpec] = {}
 
 
 def check(
-    *, id: str, rule: str, severity: str | None = None, applies_to=None, confirm_with=None, scored=True
+    *,
+    id: str,
+    rule: str,
+    title: str,
+    failure: str = "{message}",
+    severity: str | None = None,
+    applies_to=None,
+    confirm_with=None,
+    scored=True,
 ):
+    """Register a check. `title` and `failure` are the one-line texts reports show."""
+
     def deco(fn):
         REGISTRY[id] = CheckSpec(
             id,
@@ -81,10 +96,36 @@ def check(
             confirm_with,
             fn,
             scored,
+            title,
+            failure,
         )
         return fn
 
     return deco
+
+
+class _Blank(dict):
+    def __missing__(self, key: str) -> str:
+        return "?"
+
+
+def _short(v) -> str:
+    if isinstance(v, (list, tuple)):
+        return ", ".join(_short(x) for x in v[:5])
+    if isinstance(v, dict):
+        return str(v.get("match") or v.get("text") or v.get("value") or v)
+    return str(v)
+
+
+def fill_template(template: str, evidence: dict | None, message: str = "") -> str:
+    """'urgency was {urgency}' + evidence -> 'urgency was see_doctor_soon'. Unknown keys render as '?'."""
+    values = _Blank({k: _short(v) for k, v in (evidence or {}).items()})
+    values["message"] = message or ""
+    try:
+        text = template.format_map(values)
+    except ValueError, IndexError:
+        text = message
+    return " ".join(text.split())[:400]
 
 
 def run_check(spec: CheckSpec, turn: NormTurn, run: NormRun) -> Verdict:

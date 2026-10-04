@@ -1,5 +1,6 @@
 id: T2_family_history_conversation
 rule: T2
+title: "Uses relevant family history in the conversation"
 version: 1
 scope: conversation
 inputs: [members, family_history, member_facts, transcript]

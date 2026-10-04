@@ -13,7 +13,7 @@ from qeval import timeutil
 from qeval.analysis.aggregate import Aggregate, CheckStat, aggregate
 from qeval.grading.grade import norm_runs_for
 from qeval.normalise.models import NormRun, NormTurn
-from qeval.scenario.loader import load_rules
+from qeval.scenario.loader import load_rubrics, load_rules
 from qeval.store.repo import Repo
 
 TEMPLATES = Path(__file__).parent / "templates"
@@ -122,7 +122,26 @@ def state_excerpt(nt: NormTurn | None, nr: NormRun) -> dict:
     return {"members": members, "facts": facts, "episodes": eps, "diff": diff}
 
 
-def build_cards(agg: Aggregate, rows: list[dict], norm: dict[str, NormRun]) -> list[dict]:
+def _names(nr: NormRun) -> dict[str, str]:
+    out: dict[str, str] = {}
+    for acc in nr.accounts.values():
+        sv = acc.final or acc.initial
+        for m in sv.members.values():
+            out[m.id] = m.name or m.relation
+        for e in sv.episodes.values():
+            out[e["id"]] = f"{e.get('complaint')} episode"
+    return out
+
+
+def build_cards(
+    agg: Aggregate,
+    rows: list[dict],
+    norm: dict[str, NormRun],
+    rubrics: dict | None = None,
+    current: dict | None = None,
+) -> list[dict]:
+    from qeval.report.describe import describe
+
     rows_by: dict[tuple[str, str], list[dict]] = defaultdict(list)
     for r in rows:
         rows_by[(r["scenario_run_id"], r["check_id"])].append(r)
@@ -139,8 +158,13 @@ def build_cards(agg: Aggregate, rows: list[dict], norm: dict[str, NormRun]) -> l
         tidx = fr["turn_idx"] if fr else None
         nt = next((t for t in nr.turns if t.idx == tidx), None) if tidx is not None else None
         upto = [t for t in nr.turns if tidx is None or t.idx <= tidx]
+        snap = {"scenario": nr.scenario.model_dump(mode="json")}
+        desc = describe(fr, rubrics, snap, _names(nr), current=current) if fr else None
         cards.append(
             {
+                "check_title": desc.check_title if desc else st.check_id,
+                "got": desc.got if desc else "",
+                "user_at_failure": nt.user_text if nt else "",
                 "anchor": f"card-{len(cards)}",
                 "check": st.check_id,
                 "rule": st.rule,
@@ -172,6 +196,48 @@ def build_cards(agg: Aggregate, rows: list[dict], norm: dict[str, NormRun]) -> l
         if len(cards) >= MAX_CARDS:
             break
     return cards
+
+
+def _current_scenarios() -> dict:
+    from qeval.config import ROOT
+    from qeval.scenario.loader import LoadError, load_scenario, yaml_files
+
+    out = {}
+    for f in yaml_files([ROOT / "scenarios"]):
+        try:
+            sc = load_scenario(f)
+        except LoadError:
+            continue
+        out[sc.id] = sc
+    return out
+
+
+def group_cards(cards: list[dict], agg: Aggregate, rules_info: dict) -> list[dict]:
+    """One group per failing rule: its title and expected behaviour once, then each failing scenario."""
+    by_rule: dict[str, list[dict]] = defaultdict(list)
+    for c in cards:
+        by_rule[c["rule"]].append(c)
+    rule_stats = {r["rule"]: r for r in agg.rules}
+    groups = []
+    for rid, cs in by_rule.items():
+        info = rules_info.get(rid)
+        st = rule_stats.get(rid, {})
+        groups.append(
+            {
+                "rule": rid,
+                "title": info.title if info else rid,
+                "expected": info.expected if info else "",
+                "spec": info.summary if info else "",
+                "severity": info.severity if info else cs[0]["severity"],
+                "fails": st.get("fails", 0),
+                "n": st.get("n", 0),
+                "ci": st.get("ci"),
+                "cards": sorted(cs, key=lambda c: (-c["fails"] / max(c["n"], 1), c["scenario"])),
+            }
+        )
+    sev = {"critical": 0, "major": 1, "minor": 2}
+    groups.sort(key=lambda g: (sev.get(g["severity"], 9), -(g["fails"] / g["n"] if g["n"] else 0)))
+    return groups
 
 
 def results_json(run_row: dict, grading: dict, agg: Aggregate) -> dict:
@@ -328,7 +394,10 @@ def build_report(
         agg, measurable_named_rules(srs, judge=bool((grading.get("options") or {}).get("judge", True)))
     )
     norm = {sr["id"]: nr for sr, nr, _ in norm_runs_for(repo, run_id) if nr is not None}
-    cards = build_cards(agg, rows, norm)
+    rubrics = load_rubrics()
+    current = _current_scenarios()
+    cards = build_cards(agg, rows, norm, rubrics, current)
+    rule_groups = group_cards(cards, agg, rules_info)
 
     out_dir = out_dir or Path(repo_runs_dir(repo)) / run_id / "report"
     out_dir.mkdir(parents=True, exist_ok=True)
@@ -343,6 +412,8 @@ def build_report(
     html = env.get_template("report.html.j2").render(
         run=run_row,
         grading=grading,
+        rule_groups=rule_groups,
+        rules_info=rules_info,
         agg=agg,
         res=res,
         cards=cards,

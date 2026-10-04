@@ -11,8 +11,8 @@ turns:
     expect:
       - "reply.kind != 'clarify'                          # W5"
       - "diff.new_subjects.count == 1                     # W5"
-      - "diff.new_subjects.first.name ~ 'kabir'           # W5"
-      - "diff.new_subjects.first.relation ~ 'nephew'      # W5"
-      - "reply.subject_ids[0] == member(name='Kabir')     # W5"
-      - "state.facts(subject=ref('riya')).none(value ~ 'fever')   # W10"
-      - "state.facts(subject=member(name='Kabir')).any(value ~ 'fever' or key ~ 'fever')   # M3"
+      - "diff.new_subjects.first.name ~ 'kabir'           # W5: new member is named Kabir"
+      - "diff.new_subjects.first.relation ~ 'nephew'      # W5: new member is a nephew"
+      - "reply.subject_ids[0] == member(name='Kabir')     # W5: reply is about the new nephew"
+      - "state.facts(subject=ref('riya')).none(value ~ 'fever')   # W10: nephew's fever not saved on the daughter"
+      - "state.facts(subject=member(name='Kabir')).any(value ~ 'fever' or key ~ 'fever')   # M3: fever saved on the new nephew"

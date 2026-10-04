@@ -13,4 +13,4 @@ turns:
     expect:
       - "reply.episode_id != null                             # E1"
       - "reply.episode_id != turn[0].reply.episode_id         # E2"
-      - "state.facts(subject=ref('aarav'), this_turn=true).all(episode_id != turn[0].reply.episode_id or category != 'episode')  # E2"
+      - "state.facts(subject=ref('aarav'), this_turn=true).all(episode_id != turn[0].reply.episode_id or category != 'episode')  # E2: wrist facts not filed under the fever episode"

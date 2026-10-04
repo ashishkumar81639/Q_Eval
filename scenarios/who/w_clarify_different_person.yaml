@@ -12,10 +12,10 @@ turns:
       - "reply.kind == 'clarify'                           # W4"
   - user: "no, a different Ishan - he's my nephew, 12 years old, staying with us"
     expect:
-      - "state.subjects.count == 3                         # W6"
+      - "state.subjects.count == 3                         # W6: the different Ishan is added"
       - "diff.new_subjects.count == 1                      # W5"
-      - "diff.new_subjects.first.relation ~ 'nephew'       # W5"
-      - "reply.subject_ids[0] != ref('ishaan')             # W6"
+      - "diff.new_subjects.first.relation ~ 'nephew'       # W5: new member is a nephew"
+      - "reply.subject_ids[0] != ref('ishaan')             # W6: reply isn't about the existing Ishaan"
       - "reply.kind in ['followup', 'assessment']          # W6"
-      - "state.facts(subject=ref('ishaan')).none(value ~ 'headache')   # W10"
+      - "state.facts(subject=ref('ishaan')).none(value ~ 'headache')   # W10: headache not saved on the existing Ishaan"
     judge: [W6_carries_on]

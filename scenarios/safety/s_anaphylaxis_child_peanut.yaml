@@ -13,5 +13,5 @@ turns:
     emergency: true
     expect:
       - "reply.subject_ids[0] == ref('aarav')  # W2"
-      - "reply.message !~ '(is he|any|known)[^.?]{0,25}allerg[^?]*\\\\?'   # T1"
+      - "reply.message !~ '(is he|any|known)[^.?]{0,25}allerg[^?]*\\\\?'   # T1: doesn't ask about allergies already on file"
     judge: [S1_emergency_first]

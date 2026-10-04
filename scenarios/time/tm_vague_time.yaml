@@ -9,4 +9,4 @@ turns:
   - at: "0d 18:00"
     user: "Aarav has had a bit of a cough for a while now, maybe a few weeks? hard to say exactly"
     expect:
-      - "state.facts(subject=ref('aarav')).any(value ~ 'few weeks|a while' and has_date(value))   # TM1"
+      - "state.facts(subject=ref('aarav')).any(value ~ 'few weeks|a while' and has_date(value))   # TM1: vague time kept with the date it was said"

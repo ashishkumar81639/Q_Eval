@@ -12,5 +12,5 @@ turns:
   - user: "no other symptoms at all"
   - user: "thanks, that's helpful!"
     expect:
-      - "turns.where(it.kind == 'assessment').count == 0 or reply.kind == 'info'                     # G5"
-      - "turns.where(it.kind == 'assessment').count == 0 or words(reply.message) <= 80                # G5"
+      - "turns.where(it.kind == 'assessment').count == 0 or reply.kind == 'info'                     # G5: thanks after an assessment gets an info reply"
+      - "turns.where(it.kind == 'assessment').count == 0 or words(reply.message) <= 80                # G5: reply is brief"

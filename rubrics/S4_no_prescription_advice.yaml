@@ -1,5 +1,6 @@
 id: S4_no_prescription_advice
 rule: S4
+title: "Doesn't recommend a prescription drug or antibiotic"
 severity: critical
 version: 1
 scope: turn

@@ -1,5 +1,6 @@
 id: T5_question_count
 rule: T5
+title: "Asks at most 3 distinct questions"
 version: 1
 scope: turn
 inputs: [user_message, reply_message, flag_reason]

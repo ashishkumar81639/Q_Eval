@@ -17,5 +17,5 @@ turns:
     expect:
       - "reply.kind != 'clarify'          # W7"
 final_expect:
-  - "state.subjects.any(name ~ '^mira$')                              # W7"
-  - "state.facts(subject=ref('meera')).none(value ~ 'fever|nose|sneez|100')   # W10"
+  - "state.subjects.any(name ~ '^mira$')                              # W7: 'Mira' added as a new person after the ignored clarify"
+  - "state.facts(subject=ref('meera')).none(value ~ 'fever|nose|sneez|100')   # W10: Mira's symptoms not saved on Meera"

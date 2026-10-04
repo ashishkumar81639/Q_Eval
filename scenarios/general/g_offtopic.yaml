@@ -10,4 +10,4 @@ turns:
       - "reply.kind == 'info'               # G5"
       - "reply.subject_ids == []            # R6"
       - "diff.new_facts.count == 0          # M2"
-      - "words(reply.message) <= 120        # G5"
+      - "words(reply.message) <= 120        # G5: reply is brief"

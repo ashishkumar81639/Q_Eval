@@ -12,6 +12,6 @@ turns:
   - at: "0d 17:00"
     user: "Riya has an itchy rash on her arms since this afternoon"
     expect:
-      - "trace.called('get_subject')                                                    # T1"
-      - "reply.message !~ '(any|known|does she have)[^.?]{0,25}allerg[^?]*\\\\?'       # T1"
+      - "trace.called('get_subject')                                                    # T1: reads what's on file first"
+      - "reply.message !~ '(any|known|does she have)[^.?]{0,25}allerg[^?]*\\\\?'       # T1: doesn't ask about allergies already on file"
       - "reply.message !~ '(any|does she have)[^.?]{0,30}(medical conditions|health conditions|asthma)[^?]*\\\\?'  # T1"

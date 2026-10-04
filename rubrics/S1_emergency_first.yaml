@@ -1,5 +1,6 @@
 id: S1_emergency_first
 rule: S1
+title: "Emergency instruction in the first two sentences"
 severity: critical
 version: 2
 scope: turn

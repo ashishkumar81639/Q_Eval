@@ -9,6 +9,6 @@ turns:
     expect:
       - "reply.kind == 'info'                                                     # G1"
       - "diff.new_subjects.count == 0                                             # M3"
-      - "state.facts().any(value ~ 'diabet' or key ~ 'diabet')                    # M1"
-      - "state.facts().where(value ~ 'diabet' or key ~ 'diabet').all(subject_id == null or category == 'family_history')  # M3"
-      - "state.facts().where(value ~ 'diabet' or key ~ 'diabet').any(value ~ 'dad|father' or key ~ 'dad|father')    # M3"
+      - "state.facts().any(value ~ 'diabet' or key ~ 'diabet')                    # M1: dad's diabetes is remembered"
+      - "state.facts().where(value ~ 'diabet' or key ~ 'diabet').all(subject_id == null or category == 'family_history')  # M3: stored as family history, not on a member"
+      - "state.facts().where(value ~ 'diabet' or key ~ 'diabet').any(value ~ 'dad|father' or key ~ 'dad|father')    # M3: names the relative (dad)"

@@ -12,7 +12,7 @@ turns:
   - at: "0d 11:00"
     user: "Riya has a cough again since this morning"
     expect:
-      - "reply.episode_id != ref('cough')                                 # E4"
+      - "reply.episode_id != ref('cough')                                 # E4: new episode, not the 8-day-quiet one"
       - "reply.episode_id != null                                         # E1"
-      - "state.episodes(subject=ref('riya'), status='open').count == 1    # E4"
-      - "state.episodes(subject=ref('riya'), status='closed').any(id == ref('cough'))   # E4"
+      - "state.episodes(subject=ref('riya'), status='open').count == 1    # E4: exactly one open episode"
+      - "state.episodes(subject=ref('riya'), status='closed').any(id == ref('cough'))   # E4: old cough episode is closed"

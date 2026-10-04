@@ -12,5 +12,5 @@ turns:
     user: "my son has had a bad cough since yesterday"
     expect:
       - "reply.kind == 'clarify'                  # W3"
-      - "reply.options.count >= 2                 # R5"
+      - "reply.options.count >= 2                 # R5: clarify offers at least two options"
       - "diff.new_subjects.count == 0             # W3"

@@ -15,4 +15,4 @@ turns:
     expect:
       - "reply.urgency != 'urgent'                # T8"
 final_expect:
-  - "state.assessments(subject=ref('mother')).none(urgency == 'urgent')   # T8"
+  - "state.assessments(subject=ref('mother')).none(urgency == 'urgent')   # T8: long-standing forgetfulness not called urgent"

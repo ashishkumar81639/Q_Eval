@@ -1,5 +1,6 @@
 id: G2_offers_check
 rule: G2
+title: "Offers to check on the related member"
 severity: minor
 version: 1
 scope: turn

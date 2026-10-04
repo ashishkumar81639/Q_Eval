@@ -11,12 +11,12 @@ turns:
     user: "my son has had a fever since yesterday"
     expect:
       - "reply.subject_ids[0] == ref('aarav')                                       # W2"
-      - "state.facts(subject=ref('aarav')).any(value ~ date_re(-4))                 # TM1"
+      - "state.facts(subject=ref('aarav')).any(value ~ date_re(-4))                 # TM1: onset saved as an absolute date (4 days ago)"
   - at: "0d 09:00"
     user: "he still has fever, 102F this morning"
     expect:
       - "reply.episode_id == turn[0].reply.episode_id                               # E2"
-      - "reply.message !~ 'how long has he|when did (the|his) fever (start|begin)|since when'   # M6"
-      - "state.facts(subject=ref('aarav'), this_turn=true).any(value ~ '102' and value ~ date_re(0))   # TM1"
-      - "state.facts(subject=ref('aarav')).none(value ~ date_re(-1) and value ~ 'onset|since|start')   # TM2"
+      - "reply.message !~ 'how long has he|when did (the|his) fever (start|begin)|since when'   # M6: doesn't re-ask when the fever started"
+      - "state.facts(subject=ref('aarav'), this_turn=true).any(value ~ '102' and value ~ date_re(0))   # TM1: today's 102F reading saved with its date"
+      - "state.facts(subject=ref('aarav')).none(value ~ date_re(-1) and value ~ 'onset|since|start')   # TM2: onset not re-dated to yesterday"
     judge: [TM2_elapsed_reasoning]

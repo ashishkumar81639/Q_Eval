@@ -12,4 +12,4 @@ turns:
     expect:
       - "reply.kind == 'clarify'           # W4"
       - "diff.new_subjects.count == 0      # W4"
-      - "state.subjects.count == 2         # W4"
+      - "state.subjects.count == 2         # W4: nobody new added"

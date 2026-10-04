@@ -1,5 +1,6 @@
 id: TM3_compares_with_episode
 rule: TM3
+title: "Compares with the earlier illness"
 version: 1
 scope: turn
 inputs: [user_message, now_ist, episodes, previous_turns, reply_message, reply_fields]

@@ -11,5 +11,5 @@ turns:
   - at: "0d 18:00"
     user: "Riya has had a cough since yesterday. remember she's allergic to peanuts"
     expect:
-      - "state.facts(subject=ref('riya')).where(value ~ 'peanut').count == 1   # M5"
-      - "reply.message !~ '(any|known|does she have)[^.?]{0,25}allerg[^?]*\\\\?'  # T1"
+      - "state.facts(subject=ref('riya')).where(value ~ 'peanut').count == 1   # M5: peanut allergy isn't saved twice"
+      - "reply.message !~ '(any|known|does she have)[^.?]{0,25}allerg[^?]*\\\\?'  # T1: doesn't ask about allergies already on file"

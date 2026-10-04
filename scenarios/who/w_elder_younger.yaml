@@ -17,4 +17,4 @@ turns:
       - "reply.kind != 'clarify'                           # W2"
       - "reply.subject_ids[0] == ref('ananya')             # W2"
       - "reply.episode_id != turn[0].reply.episode_id      # E5"
-      - "state.facts(subject=ref('riya')).none(value ~ 'throat')   # W10"
+      - "state.facts(subject=ref('riya')).none(value ~ 'throat')   # W10: Aarav's sore throat not saved on Riya"

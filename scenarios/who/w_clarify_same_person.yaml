@@ -14,7 +14,7 @@ turns:
     expect:
       - "reply.subject_ids[0] == ref('meera')             # W6"
       - "reply.kind in ['followup', 'assessment']         # W6"
-      - "state.subjects.count == 2                        # W6"
-      - "state.subjects.none(name ~ '^mira$')             # W6"
-      - "state.subjects.any(name == 'Meera')              # W6"
+      - "state.subjects.count == 2                        # W6: no duplicate member"
+      - "state.subjects.none(name ~ '^mira$')             # W6: no 'Mira' duplicate created"
+      - "state.subjects.any(name == 'Meera')              # W6: Meera not renamed"
     judge: [W6_carries_on]

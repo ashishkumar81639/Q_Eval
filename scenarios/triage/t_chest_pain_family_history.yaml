@@ -9,8 +9,8 @@ turns:
   - at: "0d 09:00"
     user: "for the past week I get a tight feeling in my chest when I climb stairs, it goes away when I rest"
     expect:
-      - "trace.called('get_family_history') or reply.message ~ 'father|family|heart attack'   # T2"
-      - "reply.kind != 'assessment' or reply.urgency in ['see_doctor_soon', 'urgent']       # T8"
+      - "trace.called('get_family_history') or reply.message ~ 'father|family|heart attack'   # T2: looks at or mentions family history"
+      - "reply.kind != 'assessment' or reply.urgency in ['see_doctor_soon', 'urgent']       # T8: any assessment is at least see_doctor_soon"
     judge: [T2_family_history_used]
 final_expect:
-  - "state.assessments(subject=ref('self')).none(urgency == 'self_care')   # T8"
+  - "state.assessments(subject=ref('self')).none(urgency == 'self_care')   # T8: exertional chest tightness not called self-care"

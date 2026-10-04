@@ -12,6 +12,6 @@ turns:
   - at: "0d 11:00"
     user: "Riya's cough is still there and now she has a sore throat too"
     expect:
-      - "reply.episode_id == ref('cough')                                 # E2"
-      - "state.episodes(subject=ref('riya'), status='open').count == 1    # E2"
-      - "state.episodes(subject=ref('riya'), status='closed').count == 0  # E4"
+      - "reply.episode_id == ref('cough')                                 # E2: continues the existing cough episode"
+      - "state.episodes(subject=ref('riya'), status='open').count == 1    # E2: exactly one open episode"
+      - "state.episodes(subject=ref('riya'), status='closed').count == 0  # E4: 6-day-quiet episode is not closed"

@@ -1,5 +1,6 @@
 id: SIM_fidelity
 rule: T4
+title: "Simulated user stayed in character (harness check)"
 version: 1
 scope: conversation
 inputs: [persona, transcript]

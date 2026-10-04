@@ -312,6 +312,27 @@ def report(
         raise typer.Exit(code)
 
 
+@app.command()
+def findings(
+    run_ids: Annotated[
+        list[str],
+        typer.Argument(
+            help="One or more run ids ('latest' allowed), e.g. a k=5 run and its k=10 confirmation"
+        ),
+    ],
+    out: Annotated[Path, typer.Option(help="Output directory")] = ROOT / "results",
+) -> None:
+    """Write FINDINGS.md, findings.html and findings.json from findings.yaml and the runs' latest gradings."""
+    from qeval.report.findings import build_findings, write_findings
+
+    s = get_settings()
+    repo = _repo(s)
+    ids = [_resolve_run(repo, r) for r in run_ids]
+    data = build_findings(repo, ids)
+    for p in write_findings(data, out):
+        console.print(f"wrote {p}")
+
+
 @app.command("eval")
 def eval_cmd(
     paths: PathsArg = None,

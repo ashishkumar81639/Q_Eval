@@ -11,6 +11,6 @@ turns:
   - at: "0d 10:00"
     user: "good news, Riya is all better now, the fever went away yesterday and she's back to normal"
     expect:
-      - "diff.closed_episodes.count == 1                                  # E3"
-      - "state.episodes(subject=ref('riya'), status='open').count == 0    # E3"
-      - "trace.called('close_episode')                                    # E3"
+      - "diff.closed_episodes.count == 1                                  # E3: the fever episode is closed"
+      - "state.episodes(subject=ref('riya'), status='open').count == 0    # E3: no open episode left"
+      - "trace.called('close_episode')                                    # E3: agent calls close_episode"

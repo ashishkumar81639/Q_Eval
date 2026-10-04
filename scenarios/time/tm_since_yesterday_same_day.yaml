@@ -10,7 +10,7 @@ turns:
   - at: "0d 08:00"
     user: "my son has had a fever since yesterday"
     expect:
-      - "state.facts(subject=ref('aarav')).any(value ~ date_re(-1))       # TM1"
+      - "state.facts(subject=ref('aarav')).any(value ~ date_re(-1))       # TM1: 'yesterday' saved as an absolute date"
   - at: "0d 08:10"
     user: "102F now, he's drinking ok and watching TV"
     expect:

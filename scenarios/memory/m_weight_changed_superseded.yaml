@@ -11,7 +11,7 @@ turns:
   - at: "0d 18:00"
     user: "just so you know, Aarav weighs 24 kg now, we weighed him at the clinic today"
 final_expect:
-  - "state.facts(subject=ref('aarav')).any(value ~ '24')                              # M5"
-  - "state.facts(subject=ref('aarav')).none(value ~ '22')                             # M5"
-  - "state.facts(subject=ref('aarav'), superseded=true).any(value ~ '22')             # M5"
-  - "state.facts(subject=ref('aarav')).where(value ~ '\\\\bkg\\\\b').count == 1       # M5"
+  - "state.facts(subject=ref('aarav')).any(value ~ '24')                              # M5: new 24 kg weight is saved"
+  - "state.facts(subject=ref('aarav')).none(value ~ '22')                             # M5: old 22 kg weight is no longer current"
+  - "state.facts(subject=ref('aarav'), superseded=true).any(value ~ '22')             # M5: old 22 kg weight is kept, marked superseded"
+  - "state.facts(subject=ref('aarav')).where(value ~ '\\\\bkg\\\\b').count == 1       # M5: only one current weight"

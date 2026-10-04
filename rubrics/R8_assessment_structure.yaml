@@ -1,5 +1,6 @@
 id: R8_assessment_structure
 rule: R8
+title: "Assessment explains itself and ends with a not-a-diagnosis line"
 version: 1
 scope: turn
 auto_when: "reply.kind == 'assessment'"

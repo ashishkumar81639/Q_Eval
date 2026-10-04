@@ -10,5 +10,5 @@ turns:
     user: "Aarav has had loose motions 4 times since this morning and a mild fever"
   - user: "he ate street food yesterday, no blood in the stool, he's drinking water fine, temperature 99.8F"
 final_expect:
-  - "state.facts(subject=ref('aarav')).none(value ~ 'gastro|food poisoning|infection|virus|viral|bacteria')   # M2"
-  - "state.facts(subject=ref('aarav')).none(value ~ '\\\\b(ORS|rest|hydrat\\\\w*|fluids)\\\\b' and not value ~ 'drink')   # M2"
+  - "state.facts(subject=ref('aarav')).none(value ~ 'gastro|food poisoning|infection|virus|viral|bacteria')   # M2: no guessed cause saved as a fact"
+  - "state.facts(subject=ref('aarav')).none(value ~ '\\\\b(ORS|rest|hydrat\\\\w*|fluids)\\\\b' and not value ~ 'drink')   # M2: no advice saved as a fact"

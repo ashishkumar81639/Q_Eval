@@ -1,5 +1,6 @@
 id: R9_tone
 rule: R9
+title: "Warm, plain, concise reply"
 severity: minor
 version: 1
 scope: turn

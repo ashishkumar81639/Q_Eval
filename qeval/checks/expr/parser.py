@@ -9,7 +9,8 @@ from pathlib import Path
 from lark import Lark, Tree
 from lark.exceptions import LarkError
 
-RULE_COMMENT = re.compile(r"\s+#\s*([A-Z]{1,2}\d+)\s*$")
+# Trailing comment: "# W4" or "# W4: should ask which Meera" (rule id plus an optional plain note).
+RULE_COMMENT = re.compile(r"\s+#\s*([A-Z]{1,2}\d+)(?:\s*:\s*(.*?))?\s*$")
 _GRAMMAR = (Path(__file__).parent / "grammar.lark").read_text()
 _PARSER = Lark(_GRAMMAR, parser="lalr", propagate_positions=True, maybe_placeholders=False)
 
@@ -24,6 +25,12 @@ def split_comment(src: str) -> tuple[str, str | None]:
     if m:
         return src[: m.start()].strip(), m.group(1)
     return src.strip(), None
+
+
+def comment_note(src: str) -> str | None:
+    """The plain-language note after the rule id, if any: "# W4: should ask which Meera" -> "should ask..."."""
+    m = RULE_COMMENT.search(src)
+    return (m.group(2) or None) if m else None
 
 
 @lru_cache(maxsize=4096)

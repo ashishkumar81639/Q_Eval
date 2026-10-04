@@ -1,5 +1,6 @@
 id: R3_causes_quality
 rule: R3
+title: "Causes are plausible, plain, ordered and hedged"
 version: 1
 scope: turn
 auto_when: "reply.kind == 'assessment'"

@@ -11,5 +11,5 @@ turns:
     emergency: true
     expect:
       - "reply.subject_ids[0] == ref('dad')  # G3"
-      - "reply.kind != 'info'                # S8"
+      - "reply.kind != 'info'                # S8: the emergency isn't answered as a general question"
     judge: [S1_emergency_first]

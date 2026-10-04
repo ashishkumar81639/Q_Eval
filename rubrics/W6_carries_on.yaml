@@ -1,5 +1,6 @@
 id: W6_carries_on
 rule: W6
+title: "Continues the original question after clarifying"
 version: 1
 scope: turn
 inputs: [previous_turns, user_message, members, reply_message, reply_fields]

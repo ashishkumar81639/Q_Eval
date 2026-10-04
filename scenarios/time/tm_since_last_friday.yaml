@@ -7,5 +7,5 @@ turns:
   - at: "0d 21:00"
     user: "I've had a dry cough since last Friday"
     expect:
-      - "state.facts(subject=ref('self')).any(value ~ last_weekday_re('Fri'))        # TM1"
-      - "state.facts(subject=ref('self')).none(value ~ 'last friday')                # TM1"
+      - "state.facts(subject=ref('self')).any(value ~ last_weekday_re('Fri'))        # TM1: 'last Friday' saved as its date"
+      - "state.facts(subject=ref('self')).none(value ~ 'last friday')                # TM1: no 'last Friday' in saved facts"

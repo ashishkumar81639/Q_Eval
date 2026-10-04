@@ -15,7 +15,7 @@ turns:
     expect:
       - "reply.subject_ids[0] == ref('riya')                       # W1"
       - "reply.episode_id == turn[0].reply.episode_id              # E2"
-      - "trace.called('get_subject') or trace.called('list_subjects')   # M6"
-      - "reply.message !~ 'how long has she had|when did (the|her) fever start'   # M6"
-      - "reply.message !~ '(any|is there a|has she got a) rash[^?]*\\\\?|is she drinking[^?]*\\\\?'   # M6"
+      - "trace.called('get_subject') or trace.called('list_subjects')   # M6: reads the member's history"
+      - "reply.message !~ 'how long has she had|when did (the|her) fever start'   # M6: doesn't re-ask when the fever started"
+      - "reply.message !~ '(any|is there a|has she got a) rash[^?]*\\\\?|is she drinking[^?]*\\\\?'   # M6: doesn't re-ask about rash or drinking"
     judge: [TM2_elapsed_reasoning, M6_uses_earlier_info]

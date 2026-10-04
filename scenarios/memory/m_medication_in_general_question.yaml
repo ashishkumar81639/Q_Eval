@@ -7,6 +7,6 @@ turns:
   - at: "0d 11:00"
     user: "I have hypothyroidism and take thyroxine every morning - can I drink coffee with it?"
     expect:
-      - "state.facts(subject=ref('self')).any(value ~ 'thyro' or key ~ 'thyro')                         # M1"
-      - "state.facts(subject=ref('self')).where(value ~ 'thyro' or key ~ 'thyro').all(category == 'profile' or category == 'history')   # M4"
-      - "state.facts(subject=null).none(value ~ 'thyro' or key ~ 'thyro')                                 # M3"
+      - "state.facts(subject=ref('self')).any(value ~ 'thyro' or key ~ 'thyro')                         # M1: thyroid condition is remembered"
+      - "state.facts(subject=ref('self')).where(value ~ 'thyro' or key ~ 'thyro').all(category == 'profile' or category == 'history')   # M4: saved as profile/history"
+      - "state.facts(subject=null).none(value ~ 'thyro' or key ~ 'thyro')                                 # M3: saved on the holder, not account-level"

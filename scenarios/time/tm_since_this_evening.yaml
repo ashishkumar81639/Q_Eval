@@ -9,4 +9,4 @@ turns:
   - at: "0d 21:00"
     user: "Riya has had a fever since this evening"
     expect:
-      - "state.facts(subject=ref('riya')).any(value ~ date_re(0))     # TM1"
+      - "state.facts(subject=ref('riya')).any(value ~ date_re(0))     # TM1: 'this evening' saved with today's date"

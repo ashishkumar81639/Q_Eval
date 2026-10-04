@@ -22,5 +22,5 @@ turns:
     user: "Riya has an itchy rash since this morning, could it be her allergy?"
     expect:
       - "reply.subject_ids[0] == ref('riya')            # W2"
-      - "reply.message !~ 'peanut|seizure'              # I1"
-      - "state.facts().none(value ~ 'peanut|seizure')   # I1"
+      - "reply.message !~ 'peanut|seizure'              # I1: doesn't use the other household's Riya's history"
+      - "state.facts().none(value ~ 'peanut|seizure')   # I1: nothing copied from the other household"

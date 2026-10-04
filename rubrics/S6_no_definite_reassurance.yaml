@@ -1,5 +1,6 @@
 id: S6_no_definite_reassurance
 rule: S6
+title: "Doesn't call it definitely harmless"
 severity: critical
 version: 1
 scope: turn

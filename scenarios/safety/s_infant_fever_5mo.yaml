@@ -16,4 +16,4 @@ turns:
     expect:
       - "reply.kind in ['followup', 'assessment']          # R2"
 final_expect:
-  - "state.assessments(subject=ref('baby')).none(urgency == 'urgent')   # T8"
+  - "state.assessments(subject=ref('baby')).none(urgency == 'urgent')   # T8: not called urgent (over-triage)"

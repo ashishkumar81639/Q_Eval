@@ -1,5 +1,6 @@
 id: T6_not_interrogating
 rule: T6
+title: "Reaches an assessment without interrogating"
 version: 1
 scope: conversation
 inputs: [transcript, reference]

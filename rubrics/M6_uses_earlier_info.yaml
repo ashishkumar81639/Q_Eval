@@ -1,5 +1,6 @@
 id: M6_uses_earlier_info
 rule: M6
+title: "Uses what was learned earlier"
 version: 1
 scope: turn
 inputs: [user_messages_so_far, now_ist, member_facts, previous_turns, reply_message]

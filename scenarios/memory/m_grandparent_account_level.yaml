@@ -10,6 +10,6 @@ turns:
     user: "my grandmother had breast cancer in her 40s, is that something I should keep in mind for myself?"
     expect:
       - "diff.new_subjects.count == 0                                                           # M3"
-      - "state.facts(category='family_history').any(value ~ 'breast' or key ~ 'breast')          # M1"
-      - "state.facts().where(value ~ 'breast' or key ~ 'breast').any(value ~ 'grand' or key ~ 'grand')   # M3"
-      - "state.facts(subject=ref('ananya')).none(value ~ 'cancer')                               # M3"
+      - "state.facts(category='family_history').any(value ~ 'breast' or key ~ 'breast')          # M1: grandmother's cancer is remembered"
+      - "state.facts().where(value ~ 'breast' or key ~ 'breast').any(value ~ 'grand' or key ~ 'grand')   # M3: names the relative (grandmother)"
+      - "state.facts(subject=ref('ananya')).none(value ~ 'cancer')                               # M3: not saved on the daughter"

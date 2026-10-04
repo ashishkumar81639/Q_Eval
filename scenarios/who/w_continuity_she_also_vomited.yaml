@@ -13,4 +13,4 @@ turns:
     expect:
       - "reply.subject_ids[0] == ref('riya')                 # W1"
       - "reply.episode_id == turn[0].reply.episode_id        # E2"
-      - "state.facts(subject=ref('aarav')).count == 0        # W10"
+      - "state.facts(subject=ref('aarav')).count == 0        # W10: nothing saved on the brother"

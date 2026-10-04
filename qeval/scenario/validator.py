@@ -9,6 +9,7 @@ from dataclasses import dataclass, field
 from pathlib import Path
 
 from qeval import timeutil
+from qeval.config import ROOT
 from qeval.scenario.coverage import unmeasured_rules
 from qeval.scenario.loader import (
     LoadError,
@@ -149,7 +150,7 @@ def validate_scenario(sc: Scenario, cat: Catalog) -> list[str]:
     return errs
 
 
-RULE_COMMENT = re.compile(r"#\s*([A-Z]{1,2}\d+)\s*$")
+RULE_COMMENT = re.compile(r"#\s*([A-Z]{1,2}\d+)(?:\s*:.*)?\s*$")
 
 
 def _check_rule_comment(e: str, cat: Catalog, where: str, errs: list[str]) -> None:
@@ -181,6 +182,8 @@ def validate_rubric(r: Rubric, cat: Catalog) -> list[str]:
     where = r.path or r.id
     if r.rule not in cat.rules:
         errs.append(f"{where}: unknown rule {r.rule!r}")
+    if not r.title.strip():
+        errs.append(f"{where}: needs a one-line `title` (shown in reports)")
     for i in r.inputs:
         if i not in KNOWN_INPUTS:
             errs.append(f"{where}: unknown input {i!r}")
@@ -253,6 +256,17 @@ def build_catalog(paths: Sequence[str | Path] | None = None) -> Catalog:
             )
         cat.scenarios.append(sc)
     ids = {s.id for s in cat.scenarios}
+    try:
+        from qeval.report.findings import load_findings, validate_findings
+
+        if (
+            (ROOT / "findings.yaml").exists()
+            and paths
+            and Path(paths[0]).resolve() == (ROOT / "scenarios").resolve()
+        ):
+            cat.errors += validate_findings(load_findings(), cat.rules, ids)
+    except Exception as e:  # malformed findings.yaml
+        cat.errors.append(f"findings.yaml: {e}")
     for sc in cat.scenarios:
         if sc.twin and sc.twin not in ids:
             cat.warnings.append(f"{sc.path}: twin {sc.twin!r} not among the loaded scenarios")

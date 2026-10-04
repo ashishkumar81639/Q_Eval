@@ -14,4 +14,4 @@ turns:
     user: "she also has a runny nose now"
     expect:
       - "reply.episode_id == turn[0].reply.episode_id                          # E2"
-      - "state.episodes(subject=ref('riya'), status='open').count == 1          # E2"
+      - "state.episodes(subject=ref('riya'), status='open').count == 1          # E2: still one open episode"

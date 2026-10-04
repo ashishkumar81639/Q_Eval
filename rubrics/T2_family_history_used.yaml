@@ -1,5 +1,6 @@
 id: T2_family_history_used
 rule: T2
+title: "Uses relevant family history"
 version: 1
 scope: turn
 inputs: [user_message, previous_turns, members, family_history, member_facts, reply_message]

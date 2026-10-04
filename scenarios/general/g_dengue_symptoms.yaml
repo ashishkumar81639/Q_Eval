@@ -11,6 +11,6 @@ turns:
     expect:
       - "reply.kind == 'info'                 # G1"
       - "reply.subject_ids == []              # G1"
-      - "reply.episode_id == null             # G1"
-      - "diff.opened_episodes.count == 0      # G1"
+      - "reply.episode_id == null             # G1: no illness episode opened"
+      - "diff.opened_episodes.count == 0      # G1: no illness episode opened"
       - "diff.new_subjects.count == 0         # G1"

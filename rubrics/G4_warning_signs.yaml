@@ -1,5 +1,6 @@
 id: G4_warning_signs
 rule: G4
+title: "General answer includes warning signs"
 severity: minor
 version: 1
 scope: turn

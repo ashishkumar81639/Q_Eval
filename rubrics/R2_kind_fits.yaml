@@ -1,5 +1,6 @@
 id: R2_kind_fits
 rule: R2
+title: "Reply type fits the message"
 version: 1
 scope: turn
 inputs: [previous_turns, user_message, members, reply_fields, reply_message]

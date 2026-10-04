@@ -1,5 +1,6 @@
 id: M2_only_user_words
 rule: M2
+title: "Stored fact stays close to the user's words"
 version: 1
 scope: fact
 inputs: [fact_value, user_messages_so_far, now_ist, flag_reason]
