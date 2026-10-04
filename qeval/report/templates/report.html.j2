@@ -139,8 +139,8 @@ details.tech > summary { cursor: pointer; color: var(--muted); font-size: 12px; 
   {% for c in g.cards %}
   <details class="card {{ c.severity }}" id="{{ c.anchor }}">
   <summary>
-    <span class="cardline"><b>{{ c.title }}</b> <span class="rate">{{ c.fails }}/{{ c.n }} runs</span></span>
-    <span class="cardline small"><span class="muted">Checked:</span> {{ c.check_title }}</span>
+    <span class="cardline"><b>{{ c.check_title }}</b> <span class="rate">failed in {{ c.fails }}/{{ c.n }} runs</span></span>
+    <span class="cardline small"><span class="muted">Scenario:</span> {{ c.title }}{% if c.scenario_checks %} · <span class="muted">its own checks in this run:</span> {% if c.scenario_checks.failed %}<span class="err">{{ c.scenario_checks.failed }} of {{ c.scenario_checks.total }} failed</span>{% else %}all {{ c.scenario_checks.total }} passed{% endif %}{% endif %}</span>
     <span class="cardline small"><span class="muted">What happened:</span> {{ c.got }}</span>
   </summary>
   <div class="cardbody">

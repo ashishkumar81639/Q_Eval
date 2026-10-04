@@ -7,6 +7,7 @@ T0_PASS = [
     "reply.kind == 'followup'",
     "reply.kind in ['followup', 'assessment']",
     "reply.subject_ids[0] == ref('riya')",
+    "ref('riya') in reply.subject_ids",
     "reply.subject_ids == [ref('riya')]",
     "state.facts(subject=ref('riya'), category='episode').any(value ~ date_re(-1))",
     "state.facts(subject=ref('riya')).none(value ~ '\\\\byesterday\\\\b')",

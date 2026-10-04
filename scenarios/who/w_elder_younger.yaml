@@ -15,6 +15,8 @@ turns:
   - user: "and the elder one has a sore throat since this morning"
     expect:
       - "reply.kind != 'clarify'                           # W2"
-      - "reply.subject_ids[0] == ref('ananya')             # W2"
-      - "reply.episode_id != turn[0].reply.episode_id      # E5"
+      # Riya may also be listed while her earache questions are open, so only membership is meaningful.
+      - "ref('ananya') in reply.subject_ids                # W2"
+      - "diff.opened_episodes.any(subject_id == ref('ananya'))   # W2: the sore throat is filed under Ananya"
+      - "state.facts(this_turn=true, episode=turn[0].reply.episode_id).count == 0   # E5: not added to Riya's earache"
       - "state.facts(subject=ref('riya')).none(value ~ 'throat')   # W10: Aarav's sore throat not saved on Riya"

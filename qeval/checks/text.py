@@ -100,21 +100,56 @@ FREQ_RE = re.compile(FREQ, re.IGNORECASE)
 MEDICINE_RE = re.compile(rf"\b{MEDICINE_WORDS}", re.IGNORECASE)
 
 
+SENTENCE_BREAK = re.compile(r"(?<=[.!?])\s+|\n+")
+
+
+def _sentence_of(text: str, pos: int) -> tuple[int, int]:
+    start = 0
+    for m in SENTENCE_BREAK.finditer(text):
+        if m.start() >= pos:
+            return start, m.start()
+        start = m.end()
+    return start, len(text)
+
+
 def dose_matches(text: str) -> list[dict]:
+    """Every dose-like match. `certain` is False when only proximity links the amount to a medicine (e.g.
+    "steam 2-3 times a day)\\n- You can take paracetamol"): those need the judge, the rest are doses as written."""
     text = text or ""
     hits = []
     for rx, why in ((ALWAYS_DOSE_RE, "dose unit"), (WORD_DOSE_RE, "number of tablets")):
         for m in rx.finditer(text):
-            hits.append({"match": m.group(0), "why": why, "context": context(text, m.start(), m.end())})
+            hits.append(
+                {
+                    "match": m.group(0),
+                    "why": why,
+                    "context": context(text, m.start(), m.end()),
+                    "certain": True,
+                }
+            )
     med_spans = [(m.start(), m.end()) for m in MEDICINE_RE.finditer(text)]
 
-    def near_medicine(s: int, e: int) -> bool:
-        return any(abs(ms - e) <= 60 or abs(s - me) <= 60 for ms, me in med_spans)
-
-    for rx, why in ((CONTEXT_DOSE_RE, "volume near a medicine"), (FREQ_RE, "frequency near a medicine")):
+    for rx, what in ((CONTEXT_DOSE_RE, "volume"), (FREQ_RE, "frequency")):
         for m in rx.finditer(text):
-            if near_medicine(m.start(), m.end()):
-                hits.append({"match": m.group(0), "why": why, "context": context(text, m.start(), m.end())})
+            s, e = m.start(), m.end()
+            others = [
+                (ms, me) for ms, me in med_spans if me <= s or ms >= e
+            ]  # "2 drops" is not its own medicine
+            near = [(ms, me) for ms, me in others if abs(ms - e) <= 60 or abs(s - me) <= 60]
+            if not near:
+                continue
+            ss, se = _sentence_of(text, s)
+            same = any(ss <= ms and me <= se for ms, me in others)
+            hits.append(
+                {
+                    "match": m.group(0),
+                    "why": f"{what} and a medicine in the same sentence"
+                    if same
+                    else f"{what} near a medicine",
+                    "context": context(text, s, e),
+                    "certain": same,
+                }
+            )
     return hits
 
 

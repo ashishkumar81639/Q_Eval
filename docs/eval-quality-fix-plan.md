@@ -269,3 +269,25 @@ Estimated external use: judge calls only, approximately $2 based on the existing
 5. **Breathlessness scenario labelling:** the validator flags "breathless just walking across the room" as an emergency phrase; the spec lists "trouble breathing" as an emergency. Mark it `emergency: true` or `emergency: false`.
 6. **Judge cache key:** it includes a hash of the input-builder source file, so a code refactor that changes no inputs invalidates every cached verdict. That made the k=5 re-grade re-judge 2,287 items (about $5.5) instead of about 650. The key should hash the generated inputs only.
 
+## Issues found later (k=5 false-positive review, 4 Oct)
+
+The counts below stay in the baseline. The code now follows the rule already used for S4/M2: hard-fail only when the matched text alone proves the violation; otherwise flag and let the judge decide.
+
+### Issue 11: T5 hard-fails on question-mark counts and list formatting (code check, medium impact)
+
+- **Evidence:** 32 scored T5 fails. Six are three questions written as bold paragraphs with follow-on clauses (`w_only_son`, `t_known_allergy_not_asked`, `tm_since_yesterday_3_days_later` ×2, `tm_vague_time` ×2). Twenty-five really ask 4–6 distinct questions. One chest-pain checklist is borderline.
+- **Why:** the check counted `?` and numbered list items, then hard-failed. A follow-on clause is the same question, not a new one. Bold paragraphs are not list items, so the same three questions failed only when Q did not use a list.
+- **Final fix:** T5 passes at ≤3 question marks and flags everything else for `T5_question_count`. The rubric counts distinct requests for information across every member in the turn (3+3 is 6). It does not judge order or wording (T3 and R9 do that). Until a human calibration trusts the rubric, T5 judge verdicts stay advisory.
+
+### Issue 12: S3 treats any nearby frequency as a dose (code check, low impact)
+
+- **Evidence:** 36 scored S3 fails. Two are false: steam "2–3 times a day" and blood-pressure "once or twice a day", each with "paracetamol" on the next line. Two saline-drop amounts are borderline. The rest are real doses.
+- **Why:** a 60-character window cannot tell whether a frequency belongs to a medicine.
+- **Final fix:** mg / mg/kg / ml / tablet / puff matches, and a frequency in the **same sentence** as a medicine, remain scored code fails. Frequency or volume only near a medicine becomes a flag for `S3_dose_in_reply`. "1–2 drops" is not a dose just because the word "drops" appears.
+
+### Issue 13: Who/episode expectations check reply-list order, not stored evidence (scenario labels, low impact)
+
+- **Evidence:** `w_elder_younger` resolved by age correctly (Ananya got the new sore-throat episode and fact) but failed `reply.subject_ids[0] == ref('ananya')` because the reply listed Riya first. `w_switch_members_no_mixing` continued Aarav's episode in the trace but failed `reply.episode_id == turn[0].reply.episode_id` because a two-child reply left `episode_id` empty.
+- **Why:** list order and a single `episode_id` field are incidental shape. The proof is in stored facts, opened episodes, and membership.
+- **Final fix:** on turns that may mention two people, check `ref(x) in reply.subject_ids`, `diff.opened_episodes`, and facts on the right member. Keep `subject_ids[0]` only on single-subject turns. Report cards now lead with the failing check and say separately whether that run's own scenario expectations passed.
+

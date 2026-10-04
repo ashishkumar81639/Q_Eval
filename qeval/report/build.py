@@ -144,8 +144,11 @@ def build_cards(
     from qeval.report.describe import describe
 
     rows_by: dict[tuple[str, str], list[dict]] = defaultdict(list)
+    expect_by_sr: dict[str, list[dict]] = defaultdict(list)
     for r in rows:
         rows_by[(r["scenario_run_id"], r["check_id"])].append(r)
+        if r["kind"] == "expect":
+            expect_by_sr[r["scenario_run_id"]].append(r)
     cards: list[dict] = []
     for st in agg.checks:
         if not st.fails:
@@ -161,6 +164,12 @@ def build_cards(
         upto = [t for t in nr.turns if tidx is None or t.idx <= tidx]
         snap = {"scenario": nr.scenario.model_dump(mode="json")}
         desc = describe(fr, rubrics, snap, _names(nr), current=current) if fr else None
+        # A global or judge failure is shown under the scenario it happened in; say separately whether the
+        # scenario's own expectations held in that run, so the title isn't read as "this scenario failed".
+        own = expect_by_sr.get(srid, []) if st.kind != "expect" else []
+        scenario_checks = (
+            {"failed": sum(r["verdict"] == "fail" for r in own), "total": len(own)} if own else None
+        )
         cards.append(
             {
                 "check_title": desc.check_title if desc else st.check_id,
@@ -174,6 +183,7 @@ def build_cards(
                 "kind": st.kind,
                 "scenario": st.scenario_id,
                 "title": getattr(nr.scenario, "title", ""),
+                "scenario_checks": scenario_checks,
                 "fails": st.fails,
                 "n": st.n,
                 "label": st.label,

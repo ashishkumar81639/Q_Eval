@@ -1,13 +1,16 @@
 id: T5_question_count
 rule: T5
 title: "Asks at most 3 distinct questions"
-version: 1
+version: 2
 scope: turn
 inputs: [user_message, reply_message, flag_reason]
 question: >
-  Count the distinct questions the reply asks the user (sub-questions about the same item, like "Have you
-  measured her temperature? If yes, what was it?", count as one; a single question offering examples counts
-  as one). Does it ask at most 3, with the most decision-relevant first, in simple words?
-pass_if: 1 to 3 distinct questions, most relevant first, simple words.
-fail_if: 4 or more distinct questions; or the most important question buried after minor ones; or jargon.
-do_not_penalise: Question marks inside examples ("any rash?") that belong to one listed question.
+  Count the distinct questions the reply asks the user in this turn, across every family member it is about
+  (3 questions about one child plus 3 about another is 6). A sub-question about the same item ("Have you
+  measured her temperature? If yes, what was it?") counts as one; a single question offering examples
+  ("Is it all over, around the belly button, or somewhere else?") counts as one. Does it ask at most 3?
+pass_if: 1 to 3 distinct questions in the whole turn.
+fail_if: 4 or more distinct questions in the turn, counted across all members.
+do_not_penalise: >
+  Formatting (bold, numbered, bulleted or plain paragraphs), the order of the questions, and wording. Order
+  and plain words are judged by other rules (T3 danger screen first, R9 tone); judge only the count here.
